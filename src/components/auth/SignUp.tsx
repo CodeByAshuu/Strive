@@ -74,11 +74,16 @@ export const SignUp: React.FC = () => {
       } else {
         navigate('/stepper')
       }
-    } catch (error: any) {
-      setError('email', { message: 'Something went wrong' })
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError('email', { message: err.message })
+      } else {
+        setError('email', { message: 'Something went wrong' })
+      }
     }
     setLoading(false)
   }
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-emerald-900 to-gray-900 flex items-center justify-center p-4">
