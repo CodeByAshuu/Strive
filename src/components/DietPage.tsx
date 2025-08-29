@@ -102,10 +102,10 @@ export const DietPage: React.FC = () => {
                     <button
                       key={option}
                       onClick={() => setBudget(option)}
-                      className={`w-full p-3 rounded-xl border text-left transition-all ${
+                      className={`w-full p-3 rounded-xl border text-left transition-all text-gray-300 ${
                         budget === option
                           ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
-                          : 'border-gray-300 dark:border-gray-600 hover:border-emerald-300'
+                          : 'border-gray-300 dark:border-gray-600 hover:border-emerald-200'
                       }`}
                     >
                       {option}
@@ -125,7 +125,7 @@ export const DietPage: React.FC = () => {
                     <button
                       key={option}
                       onClick={() => setPreference(option)}
-                      className={`w-full p-3 rounded-xl border text-left transition-all ${
+                      className={`w-full p-3 rounded-xl border text-left transition-all text-gray-100 ${
                         preference === option
                           ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
                           : 'border-gray-300 dark:border-gray-600 hover:border-emerald-300'
