@@ -5,7 +5,7 @@ import { PrivateRoute } from './components/common/PrivateRoute'
 import { Navigation } from './components/Navigation'
 import { SignUp } from './components/auth/SignUp'
 import { Login } from './components/auth/Login'
-// import { StepperQuiz } from './components/StepperQuiz'
+import { StepperQuiz } from './components/StepperQuiz'
 import { Dashboard } from './components/Dashboard'
 import { DietPage } from './components/DietPage'
 import { WorkoutPage } from './components/WorkoutPage'
@@ -23,11 +23,11 @@ function App() {
             <Route path="/login" element={<Login />} />
             
             {/* Private Routes */}
-            {/* <Route path="/stepper" element={
+            <Route path="/stepper" element={
               <PrivateRoute>
                 <StepperQuiz />
               </PrivateRoute>
-            } /> */}
+            } />
             
             <Route path="/dashboard" element={
               <PrivateRoute>
