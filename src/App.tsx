@@ -7,7 +7,7 @@ import { SignUp } from './components/auth/SignUp'
 import { Login } from './components/auth/Login'
 // import { StepperQuiz } from './components/StepperQuiz'
 import { Dashboard } from './components/Dashboard'
-// import { DietPage } from './components/DietPage'
+import { DietPage } from './components/DietPage'
 // import { WorkoutPage } from './components/WorkoutPage'
 // import { BodyExplorer } from './components/BodyExplorer'
 // import { ProfilePage } from './components/ProfilePage'
@@ -36,12 +36,12 @@ function App() {
               </PrivateRoute>
             } />
             
-            {/* <Route path="/diet" element={
+            <Route path="/diet" element={
               <PrivateRoute>
                 <DietPage />
                 <Navigation />
               </PrivateRoute>
-            } /> */}
+            } />
             
             {/* <Route path="/workout" element={
               <PrivateRoute>
