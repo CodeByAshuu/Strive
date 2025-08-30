@@ -10,7 +10,7 @@ import { Dashboard } from './components/Dashboard'
 import { DietPage } from './components/DietPage'
 import { WorkoutPage } from './components/WorkoutPage'
 import { BodyExplorer } from './components/BodyExplorer'
-// import { ProfilePage } from './components/ProfilePage'
+import { ProfilePage } from './components/ProfilePage'
 
 function App() {
   return (
@@ -57,12 +57,12 @@ function App() {
               </PrivateRoute>
             } />
             
-            {/* <Route path="/profile" element={
+            <Route path="/profile" element={
               <PrivateRoute>
                 <ProfilePage />
                 <Navigation />
               </PrivateRoute>
-            } /> */}
+            } />
 
             {/* Default redirect */}
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
