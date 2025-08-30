@@ -4,7 +4,7 @@ import { useAuth } from './../contexts/AuthContext'
 import { Card, GlareCard } from './ui/Card'
 import { Button } from './ui/Button'
 import { Link } from 'react-router-dom'
-import { Utensils, Dumbbell, Target, TrendingUp } from 'lucide-react'
+import { Utensils, Dumbbell, Target, } from 'lucide-react'
 import Waves from './ui/WaveBackground';
 
 export const Dashboard: React.FC = () => {
@@ -36,7 +36,7 @@ export const Dashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-black dark:to-gray-900 pb-24">
-      <div className='z-1'>
+      <div className='z-1 absolute inset-0'>
           <Waves
           lineColor="#10B981"
           backgroundColor="rgba(255, 255, 255, 0)"
@@ -50,45 +50,25 @@ export const Dashboard: React.FC = () => {
           xGap={12}
           yGap={36}
         />
-        </div>
-      <div className="container mx-auto px-4 py-8 z-2 relative">
+      </div>
         {/* Hero Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 120 }}
+        <div className="flex flex-col items-center justify-center text-center min-h-[60vh] z-20 relative px-4">
+        <motion.h1
+          initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          className="text-6xl md:text-7xl font-extrabold text-gray-900 dark:text-white tracking-wide uppercase mb-6"
         >
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            Welcome back, {user?.user_metadata?.name?.split(' ')[0] || 'Warrior'}! 💪
-          </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Ready to crush your fitness goals? Let's make today count!
-          </p>
-        </motion.div>
-
-        {/* Stats Cards */}
-        <motion.div
+          STRIVE
+        </motion.h1>
+        <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12"
+          transition={{ delay: 0.2 }}
+          className="text-xl md:text-2xl text-gray-700 dark:text-gray-300"
         >
-          <Card className="p-6 text-center">
-            <TrendingUp className="w-8 h-8 text-emerald-500 mx-auto mb-3" />
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">7</h3>
-            <p className="text-gray-600 dark:text-gray-400">Days Active</p>
-          </Card>
-          <Card className="p-6 text-center">
-            <Dumbbell className="w-8 h-8 text-blue-500 mx-auto mb-3" />
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">12</h3>
-            <p className="text-gray-600 dark:text-gray-400">Workouts Completed</p>
-          </Card>
-          <Card className="p-6 text-center">
-            <Target className="w-8 h-8 text-purple-500 mx-auto mb-3" />
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">85%</h3>
-            <p className="text-gray-600 dark:text-gray-400">Goal Progress</p>
-          </Card>
-        </motion.div>
+          Welcome back, {user?.user_metadata?.name?.split(' ')[0] || 'Warrior'}!
+        </motion.p>
+      </div>
 
         {/* Feature Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -142,6 +122,5 @@ export const Dashboard: React.FC = () => {
           </Card>
         </motion.div>
       </div>
-    </div>
   )
 }
