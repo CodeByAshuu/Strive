@@ -1,11 +1,12 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from './../contexts/AuthContext'
-import { Card, GlareCard } from './ui/Card'
+import { Card} from './ui/Card'
 import { Button } from './ui/Button'
 import { Link } from 'react-router-dom'
 import { Utensils, Dumbbell, Target, } from 'lucide-react'
 import Waves from './ui/WaveBackground';
+import GlareHover from './ui/GlareHover';
 
 export const Dashboard: React.FC = () => {
   const { user } = useAuth()
@@ -51,8 +52,9 @@ export const Dashboard: React.FC = () => {
           yGap={36}
         />
       </div>
-        {/* Hero Section */}
-        <div className="flex flex-col items-center justify-center text-center min-h-[60vh] z-20 relative px-4">
+      
+      {/* Hero Section */}
+      <div className="flex flex-col items-center justify-center text-center min-h-[60vh] z-20 relative px-4">
         <motion.h1
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -71,17 +73,19 @@ export const Dashboard: React.FC = () => {
       </div>
 
         {/* Feature Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((feature, index) => {
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mx-4">
+          {features.map((feature) => {
             const Icon = feature.icon
             return (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 + index * 0.1 }}
-              >
-                <GlareCard>
+                <div style={{ height: '600px', position: 'relative' }}>
+                <GlareHover
+                  glareColor="#ffffff"
+                  glareOpacity={0.3}
+                  glareAngle={-30}
+                  glareSize={300}
+                  transitionDuration={800}
+                  playOnce={false}
+                >
                   <div className="p-8">
                     <div className={`w-14 h-14 bg-gradient-to-r ${feature.color} rounded-2xl flex items-center justify-center mb-6`}>
                       <Icon className="w-7 h-7 text-white" />
@@ -98,8 +102,8 @@ export const Dashboard: React.FC = () => {
                       </Button>
                     </Link>
                   </div>
-                </GlareCard>
-              </motion.div>
+                </GlareHover>
+              </div>
             )
           })}
         </div>
