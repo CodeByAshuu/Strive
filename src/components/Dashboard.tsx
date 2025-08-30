@@ -5,6 +5,7 @@ import { Card, GlareCard } from './ui/Card'
 import { Button } from './ui/Button'
 import { Link } from 'react-router-dom'
 import { Utensils, Dumbbell, Target, TrendingUp } from 'lucide-react'
+import Waves from './ui/WaveBackground';
 
 export const Dashboard: React.FC = () => {
   const { user } = useAuth()
@@ -34,11 +35,26 @@ export const Dashboard: React.FC = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pb-24">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-black dark:to-gray-900 pb-24">
+      <div className='z-1'>
+          <Waves
+          lineColor="#10B981"
+          backgroundColor="rgba(255, 255, 255, 0)"
+          waveSpeedX={0.02}
+          waveSpeedY={0.01}
+          waveAmpX={40}
+          waveAmpY={20}
+          friction={0.9}
+          tension={0.01}
+          maxCursorMove={120}
+          xGap={12}
+          yGap={36}
+        />
+        </div>
+      <div className="container mx-auto px-4 py-8 z-2 relative">
         {/* Hero Section */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 120 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
