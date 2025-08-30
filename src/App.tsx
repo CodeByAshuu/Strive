@@ -9,7 +9,7 @@ import { StepperQuiz } from './components/StepperQuiz'
 import { Dashboard } from './components/Dashboard'
 import { DietPage } from './components/DietPage'
 import { WorkoutPage } from './components/WorkoutPage'
-// import { BodyExplorer } from './components/BodyExplorer'
+import { BodyExplorer } from './components/BodyExplorer'
 // import { ProfilePage } from './components/ProfilePage'
 
 function App() {
@@ -50,12 +50,12 @@ function App() {
               </PrivateRoute>
             } />
             
-            {/* <Route path="/body-explorer" element={
+            <Route path="/body-explorer" element={
               <PrivateRoute>
                 <BodyExplorer />
                 <Navigation />
               </PrivateRoute>
-            } /> */}
+            } />
             
             {/* <Route path="/profile" element={
               <PrivateRoute>
