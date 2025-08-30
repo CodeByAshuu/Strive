@@ -231,7 +231,7 @@ export const ProfilePage: React.FC = () => {
                     <Button
                       onClick={handleSave}
                       loading={loading}
-                      className="flex-1"
+                      className="flex-1 flex items-center justify-center"
                     >
                       <Save className="w-4 h-4 mr-2" />
                       Save Changes
@@ -239,7 +239,7 @@ export const ProfilePage: React.FC = () => {
                     <Button
                       variant="ghost"
                       onClick={() => setEditing(false)}
-                      className="flex-1"
+                      className="flex-1 flex items-center justify-center text-white hover:text-gray-700"
                     >
                       Cancel
                     </Button>
@@ -247,21 +247,23 @@ export const ProfilePage: React.FC = () => {
                 ) : (
                   <>
                     <Button
-                      onClick={() => setEditing(true)}
-                      variant="secondary"
-                      className="flex-1"
+                        onClick={() => setEditing(true)}
+                        variant="secondary"
+                        className="flex-1 flex items-center justify-center"
                     >
-                      <Edit2 className="w-4 h-4 mr-2" />
-                      Edit Profile
+                    <Edit2 className="w-4 h-4 mr-2" />
+                        Edit Profile
                     </Button>
+
                     <Button
-                      onClick={handleSignOut}
-                      variant="ghost"
-                      className="flex-1"
+                        onClick={handleSignOut}
+                        variant="ghost"
+                        className="flex-1 flex items-center justify-center text-white hover:text-gray-700"
                     >
-                      <LogOut className="w-4 h-4 mr-2" />
-                      Sign Out
+                    <LogOut className="w-4 h-4 mr-2" />
+                        Sign Out
                     </Button>
+
                   </>
                 )}
               </div>
