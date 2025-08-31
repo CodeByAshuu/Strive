@@ -99,3 +99,8 @@ body {
   background-color: #10b981;
   color: white;
 }
+
+.wave-fade {
+  mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+}
