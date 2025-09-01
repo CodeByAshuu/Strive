@@ -190,7 +190,7 @@ export const DietPage: React.FC = () => {
       IMPORTANT: Each meal description should include:
       - Specific food items with quantities
       - Cooking method (if relevant)
-      - Approximate calorie and protein count
+      - Approximate calorie and proteincount
       - Portion sizes in measurable units
       `
 
@@ -516,7 +516,7 @@ export const DietPage: React.FC = () => {
               <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
                 Your 7-Day Indian Meal Plan
               </h2>
-              <Button onClick={downloadMealPlanPDF} variant="secondary">
+              <Button onClick={downloadMealPlanPDF} variant="secondary" className='flex items-center justify-center'>
                 <Download className="w-4 h-4 mr-2" />
                 Download PDF
               </Button>
