@@ -1,70 +1,341 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Utensils, DollarSign, Leaf, ChefHat } from 'lucide-react'
+import { DollarSign, Leaf, ChefHat, Download, Calendar, AlertCircle } from 'lucide-react'
+import { useAuth } from './../contexts/AuthContext'
+import { supabase } from './../lib/supabase'
+import { getMealPlan, type WeeklyMealPlan } from './../lib/openai'
 import { Button } from './ui/Button'
 import { Card, GlareCard } from './ui/Card'
+import jsPDF from 'jspdf'
 
-interface MealPlan {
-  type: string
-  name: string
-  calories: number
-  protein: number
-  carbs: number
-  fats: number
-  ingredients: string[]
-  instructions: string[]
+interface UserProfile {
+  age: number | null
+  weight: number | null
+  height: number | null
+  goal: string | null
+  workout_frequency: string | null
+  target_weight: number | null
 }
 
-const sampleMealPlans: MealPlan[] = [
-  {
-    type: 'Breakfast',
-    name: 'Protein Power Bowl',
-    calories: 420,
-    protein: 35,
-    carbs: 25,
-    fats: 18,
-    ingredients: ['3 eggs', '1 cup oats', '1 banana', '1 tbsp almond butter', 'Greek yogurt'],
-    instructions: ['Cook eggs', 'Prepare oats', 'Slice banana', 'Mix with yogurt', 'Add almond butter']
-  },
-  {
-    type: 'Lunch',
-    name: 'Lean Muscle Builder',
-    calories: 580,
-    protein: 45,
-    carbs: 35,
-    fats: 22,
-    ingredients: ['200g chicken breast', '150g brown rice', 'Mixed vegetables', 'Olive oil', 'Herbs'],
-    instructions: ['Grill chicken', 'Cook brown rice', 'Steam vegetables', 'Season with herbs', 'Drizzle olive oil']
-  },
-  {
-    type: 'Dinner',
-    name: 'Recovery Feast',
-    calories: 520,
-    protein: 40,
-    carbs: 30,
-    fats: 20,
-    ingredients: ['200g salmon', '150g sweet potato', 'Asparagus', 'Quinoa', 'Lemon'],
-    instructions: ['Bake salmon', 'Roast sweet potato', 'Steam asparagus', 'Cook quinoa', 'Add lemon zest']
-  }
-]
-
 export const DietPage: React.FC = () => {
+  const { user } = useAuth()
   const [budget, setBudget] = useState('')
   const [preference, setPreference] = useState('')
-  const [mealPlans, setMealPlans] = useState<MealPlan[]>([])
+  const [customPreference, setCustomPreference] = useState('')
+  const [weeklyMealPlan, setWeeklyMealPlan] = useState<WeeklyMealPlan>({})
   const [loading, setLoading] = useState(false)
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
+  const [error, setError] = useState('')
+  const [profileComplete, setProfileComplete] = useState(false)
 
-  const generateMealPlan = async () => {
+  useEffect(() => {
+    if (user) {
+      fetchUserProfile()
+    }
+  }, [user])
+
+  const fetchUserProfile = async () => {
+    if (!user) return
+
+    try {
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .single()
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error fetching profile:', error)
+        return
+      }
+
+      if (data) {
+        const profile = {
+          age: data.age,
+          weight: data.weight,
+          height: data.height,
+          goal: data.goal,
+          workout_frequency: data.workout_frequency,
+          target_weight: data.target_weight,
+        }
+        setUserProfile(profile)
+        
+        // Check if profile is complete enough
+        const isComplete = data.age && data.weight && data.height && data.goal
+        setProfileComplete(!!isComplete)
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error)
+    }
+  }
+
+  const getMealFrequency = (goal: string | null): string[] => {
+    if (!goal) return ['Breakfast', 'Lunch', 'Dinner', 'Snack']
+    
+    const lowerGoal = goal.toLowerCase();
+    switch (lowerGoal) {
+      case 'bulking':
+      case 'lean bulk':
+        return ['Breakfast', 'Brunch', 'Lunch', 'Snack', 'Dinner', 'Post-Workout']
+      case 'cutting':
+        return ['Breakfast', 'Lunch', 'Snack', 'Dinner']
+      case 'maintenance':
+      case 'general fitness':
+        return ['Breakfast', 'Lunch', 'Snack', 'Dinner', 'Evening Snack']
+      default:
+        return ['Breakfast', 'Lunch', 'Dinner', 'Snack']
+    }
+  }
+
+  const handleGenerateMealPlan = async () => {
+    setError("")
+    
+    if (!userProfile) {
+      setError("Please complete your profile first")
+      return
+    }
+
+    if (!profileComplete) {
+      setError("Your profile is incomplete. Please update your age, weight, height, and goal.")
+      return
+    }
+
+    if (!budget || !preference || (preference === 'Custom' && !customPreference)) {
+      setError("Please select budget and preference options")
+      return
+    }
+
     setLoading(true)
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    setMealPlans(sampleMealPlans)
+    console.log("🔄 Starting meal plan generation...")
+    
+    try {
+      const finalPreference = preference === 'Custom' ? customPreference : preference
+      const mealTypes = getMealFrequency(userProfile.goal)
+
+      const prompt = `
+      Create a detailed 7-day Indian meal plan based on the following user information:
+      
+      USER PROFILE:
+      - Age: ${userProfile.age} years
+      - Current Weight: ${userProfile.weight} kg
+      - Height: ${userProfile.height} cm
+      - Goal Weight: ${userProfile.target_weight} kg
+      - Workout Frequency: ${userProfile.workout_frequency}
+      - Fitness Goal: ${userProfile.goal}
+      - Budget: ${budget}
+      - Dietary Preference: ${finalPreference}
+      
+      MEAL STRUCTURE:
+      ${mealTypes.length} meals per day: ${mealTypes.join(", ")}
+      
+      REQUIREMENTS:
+      - Focus on authentic Indian foods and ingredients
+      - Include portion sizes and cooking methods
+      - Adjust calories and macros based on the fitness goal
+      - Consider the budget constraints
+      - Respect dietary preferences
+      
+      OUTPUT FORMAT:
+      Return ONLY valid JSON with this structure:
+      {
+        "Day 1": {
+          "Breakfast": "Meal description with portions",
+          "Lunch": "Meal description with portions",
+          ...
+        },
+        "Day 2": { ... },
+        ...
+        "Day 7": { ... }
+      }
+      `
+
+      console.log("📤 Sending prompt to OpenAI...")
+      const response = await getMealPlan(prompt)
+      console.log("✅ Successfully received meal plan:", response)
+      setWeeklyMealPlan(response)
+      
+    } catch (error: unknown) {
+      console.error("❌ Error generating meal plan:", error)
+      if (error instanceof Error) {
+        setError(error.message || "Failed to generate meal plan. Please try again.")
+      } else {
+        setError("Failed to generate meal plan. Please try again.")
+      }
+    }
     setLoading(false)
   }
 
+  const calculateCalories = (profile: UserProfile | null): number => {
+    if (!profile) return 2000
+    
+    // Basic calorie calculation based on goal and user data
+    const baseCalories = 2000 // Default base
+    
+    if (!profile.goal) return baseCalories
+    
+    const lowerGoal = profile.goal.toLowerCase();
+    switch (lowerGoal) {
+      case 'bulking':
+      case 'lean bulk':
+        return baseCalories + 500 // Surplus for muscle gain
+      case 'cutting':
+        return baseCalories - 500 // Deficit for fat loss
+      case 'maintenance':
+      case 'general fitness':
+      default:
+        return baseCalories
+    }
+  }
+
+  const downloadMealPlanPDF = () => {
+    const doc = new jsPDF()
+    
+    // Set initial coordinates
+    let y = 20
+    let page = 1
+    
+    // Add header with logo/background
+    doc.setFillColor(16, 185, 129) // Emerald color
+    doc.rect(0, 0, 210, 30, "F")
+    doc.setTextColor(255, 255, 255)
+    doc.setFontSize(20)
+    doc.setFont("helvetica", "bold")
+    doc.text("STRIVE", 20, 20)
+    doc.setFontSize(12)
+    doc.setFont("helvetica", "normal")
+    doc.text("Your Personalized Meal Plan", 20, 27)
+    
+    // Reset text color for content
+    doc.setTextColor(0, 0, 0)
+    y = 45
+    
+    // Add user info section
+    doc.setFontSize(16)
+    doc.setFont("helvetica", "bold")
+    doc.text("Weekly Meal Plan", 20, y)
+    y += 10
+    
+    doc.setFontSize(10)
+    doc.setFont("helvetica", "normal")
+    doc.text(`Goal: ${userProfile?.goal || "Not specified"}`, 20, y)
+    doc.text(`Budget: ${budget || "Not specified"}`, 120, y)
+    y += 5
+    doc.text(`Preference: ${preference === "Custom" ? customPreference : preference || "Not specified"}`, 20, y)
+    y += 5
+    doc.text(`Age: ${userProfile?.age || "Not specified"} years`, 20, y)
+    doc.text(`Weight: ${userProfile?.weight || "Not specified"} kg`, 120, y)
+    y += 5
+    doc.text(`Target Weight: ${userProfile?.target_weight || "Not specified"} kg`, 20, y)
+    doc.text(`Workout Frequency: ${userProfile?.workout_frequency || "Not specified"}`, 120, y)
+    y += 15
+    
+    // Add meal plan content
+    Object.entries(weeklyMealPlan).forEach(([day, meals]) => {
+      // Check if we need a new page
+      if (y > 250) {
+        doc.addPage()
+        page++
+        y = 20
+        
+        // Add header to new page
+        doc.setFillColor(16, 185, 129)
+        doc.rect(0, 0, 210, 30, "F")
+        doc.setTextColor(255, 255, 255)
+        doc.setFontSize(12)
+        doc.setFont("helvetica", "normal")
+        doc.text(`STRIVE - Meal Plan (Page ${page})`, 20, 20)
+        doc.setTextColor(0, 0, 0)
+        y = 35
+      }
+      
+      // Day header
+      doc.setFontSize(14)
+      doc.setFont("helvetica", "bold")
+      doc.text(day, 20, y)
+      y += 8
+      
+      // Meals for the day
+      Object.entries(meals).forEach(([mealType, meal]) => {
+        // Check if we need a new page before adding meal
+        if (y > 270) {
+          doc.addPage()
+          page++
+          y = 20
+          
+          // Add header to new page
+          doc.setFillColor(16, 185, 129)
+          doc.rect(0, 0, 210, 30, "F")
+          doc.setTextColor(255, 255, 255)
+          doc.setFontSize(12)
+          doc.setFont("helvetica", "normal")
+          doc.text(`STRIVE - Meal Plan (Page ${page})`, 20, 20)
+          doc.setTextColor(0, 0, 0)
+          y = 35
+          
+          // Re-add day header on new page
+          doc.setFontSize(14)
+          doc.setFont("helvetica", "bold")
+          doc.text(day, 20, y)
+          y += 8
+        }
+        
+        // Meal type
+        doc.setFontSize(11)
+        doc.setFont("helvetica", "bold")
+        const mealTypeText = `${mealType}:`
+        doc.text(mealTypeText, 25, y)
+        y += 4
+        
+        // Meal description with proper text wrapping
+        doc.setFont("helvetica", "normal")
+        doc.setFontSize(10)
+        
+        const splitText = doc.splitTextToSize(meal, 160)
+        const textHeight = splitText.length * 4
+        
+        // Check if text will fit on current page
+        if (y + textHeight > 270) {
+          doc.addPage()
+          page++
+          y = 20
+          
+          // Add header to new page
+          doc.setFillColor(16, 185, 129)
+          doc.rect(0, 0, 210, 30, "F")
+          doc.setTextColor(255, 255, 255)
+          doc.setFontSize(12)
+          doc.setFont("helvetica", "normal")
+          doc.text(`STRIVE - Meal Plan (Page ${page})`, 20, 20)
+          doc.setTextColor(0, 0, 0)
+          y = 35
+        }
+        
+        doc.text(splitText, 25, y)
+        y += textHeight + 6
+      })
+      
+      // Add space between days
+      y += 10
+    })
+    
+    // Add footer with generation date
+    const totalPages = doc.getNumberOfPages()
+    for (let i = 1; i <= totalPages; i++) {
+      doc.setPage(i)
+      doc.setFontSize(8)
+      doc.setTextColor(100, 100, 100)
+      doc.text(`Generated on: ${new Date().toLocaleDateString()} - Page ${i} of ${totalPages}`, 20, 285)
+    }
+    
+    // Save the PDF
+    doc.save("strive-meal-plan.pdf")
+  }
+
+  const mealTypes = getMealFrequency(userProfile?.goal ?? null)
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pb-24">
-      <div className="container mx-auto px-4 pt-24">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pt-24">
+      <div className="container mx-auto px-4 py-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -74,9 +345,43 @@ export const DietPage: React.FC = () => {
             🍽️ Personalized Diet Plans
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Get AI-powered meal plans tailored to your goals, budget, and preferences
+            Get AI-powered Indian meal plans tailored to your goals, budget, and preferences
           </p>
         </motion.div>
+
+        {/* Error Message */}
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-2xl mx-auto mb-6"
+          >
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
+              <div className="flex items-center">
+                <AlertCircle className="w-5 h-5 text-red-500 mr-2" />
+                <span className="text-red-700 dark:text-red-300">{error}</span>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Profile Incomplete Warning */}
+        {!profileComplete && user && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-2xl mx-auto mb-6"
+          >
+            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4">
+              <div className="flex items-center">
+                <AlertCircle className="w-5 h-5 text-yellow-500 mr-2" />
+                <span className="text-yellow-700 dark:text-yellow-300">
+                  Please complete your profile with age, weight, height, and fitness goal to generate meal plans.
+                </span>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Configuration */}
         <motion.div
@@ -95,17 +400,17 @@ export const DietPage: React.FC = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                   <DollarSign className="w-4 h-4 inline mr-1" />
-                  Budget Range
+                  Budget Range (INR)
                 </label>
                 <div className="space-y-2">
-                  {['Low ($20-40/week)', 'Medium ($40-80/week)', 'High ($80+/week)'].map((option) => (
+                  {['₹1500-₹3000/week', '₹3000-₹6000/week', '₹6000+/week'].map((option) => (
                     <button
                       key={option}
                       onClick={() => setBudget(option)}
-                      className={`w-full p-3 rounded-xl border text-left transition-all text-gray-300 ${
+                      className={`w-full p-3 rounded-xl border text-left transition-all dark:text-gray-200 ${
                         budget === option
                           ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
-                          : 'border-gray-300 dark:border-gray-600 hover:border-emerald-200'
+                          : 'border-gray-300 dark:border-gray-600 hover:border-emerald-300'
                       }`}
                     >
                       {option}
@@ -118,14 +423,14 @@ export const DietPage: React.FC = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                   <Leaf className="w-4 h-4 inline mr-1" />
-                  Dietary Preference
+                  Food Preference
                 </label>
                 <div className="space-y-2">
-                  {['Omnivore', 'Vegetarian', 'Vegan', 'Keto', 'Paleo'].map((option) => (
+                  {['Vegetarian', 'Eggetarian', 'Non-Vegetarian', 'Jain', 'Custom'].map((option) => (
                     <button
                       key={option}
                       onClick={() => setPreference(option)}
-                      className={`w-full p-3 rounded-xl border text-left transition-all text-gray-100 ${
+                      className={`w-full p-3 rounded-xl border text-left transition-all dark:text-gray-200 ${
                         preference === option
                           ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
                           : 'border-gray-300 dark:border-gray-600 hover:border-emerald-300'
@@ -135,91 +440,136 @@ export const DietPage: React.FC = () => {
                     </button>
                   ))}
                 </div>
+                
+                {preference === 'Custom' && (
+                  <div className="mt-3">
+                    <input
+                      type="text"
+                      placeholder="Enter your custom preference"
+                      value={customPreference}
+                      onChange={(e) => setCustomPreference(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:bg-gray-700 dark:text-white"
+                    />
+                  </div>
+                )}
               </div>
             </div>
 
+            {/* Meal Frequency Info */}
+            {userProfile?.goal && (
+              <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+                <h3 className="font-semibold text-blue-800 dark:text-blue-300 mb-2">
+                  Your Meal Plan Structure
+                </h3>
+                <p className="text-sm text-blue-600 dark:text-blue-400 mb-2">
+                  Based on your goal ({userProfile.goal}), you'll get {mealTypes.length} meals per day:
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {mealTypes.map((meal) => (
+                    <span key={meal} className="px-2 py-1 bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-300 rounded-lg text-xs">
+                      {meal}
+                    </span>
+                  ))}
+                </div>
+                <p className="text-xs text-blue-500 dark:text-blue-400 mt-2">
+                  Target: {calculateCalories(userProfile)} calories per day
+                </p>
+              </div>
+            )}
+
             <Button
-              onClick={generateMealPlan}
-              disabled={!budget || !preference}
+              onClick={handleGenerateMealPlan}
+              disabled={!budget || !preference || (preference === 'Custom' && !customPreference) || !userProfile || !profileComplete}
               loading={loading}
-              className="w-full"
+              className="w-full flex items-center justify-center"
             >
               <ChefHat className="w-5 h-5 mr-2" />
-              Generate Meal Plan
+              Generate AI-Powered Meal Plan
             </Button>
           </Card>
         </motion.div>
 
-        {/* Meal Plans */}
-        {mealPlans.length > 0 && (
+        {/* Weekly Meal Plans */}
+        {Object.keys(weeklyMealPlan).length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-8">
-              Your Personalized Meal Plan
-            </h2>
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+                Your 7-Day Indian Meal Plan
+              </h2>
+              <Button onClick={downloadMealPlanPDF} variant="secondary">
+                <Download className="w-4 h-4 mr-2" />
+                Download PDF
+              </Button>
+            </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {mealPlans.map((meal, index) => (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {Object.entries(weeklyMealPlan).map(([day, meals]) => (
                 <motion.div
-                  key={meal.name}
+                  key={day}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 + index * 0.1 }}
+                  transition={{ delay: 0.4 }}
                 >
                   <GlareCard>
                     <div className="p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="px-3 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full text-sm font-medium">
-                          {meal.type}
-                        </span>
-                        <Utensils className="w-5 h-5 text-gray-400" />
+                      <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                          {day}
+                        </h3>
+                        <Calendar className="w-5 h-5 text-emerald-500" />
                       </div>
                       
-                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-                        {meal.name}
-                      </h3>
-                      
-                      {/* Macros */}
-                      <div className="grid grid-cols-4 gap-4 mb-6">
-                        <div className="text-center">
-                          <p className="text-2xl font-bold text-emerald-600">{meal.calories}</p>
-                          <p className="text-xs text-gray-500">Calories</p>
-                        </div>
-                        <div className="text-center">
-                          <p className="text-2xl font-bold text-blue-600">{meal.protein}g</p>
-                          <p className="text-xs text-gray-500">Protein</p>
-                        </div>
-                        <div className="text-center">
-                          <p className="text-2xl font-bold text-orange-600">{meal.carbs}g</p>
-                          <p className="text-xs text-gray-500">Carbs</p>
-                        </div>
-                        <div className="text-center">
-                          <p className="text-2xl font-bold text-purple-600">{meal.fats}g</p>
-                          <p className="text-xs text-gray-500">Fats</p>
-                        </div>
+                      <div className="space-y-4">
+                        {Object.entries(meals).map(([mealType, meal]) => (
+                          <div key={mealType} className="border-l-4 border-emerald-500 pl-4">
+                            <h4 className="font-semibold text-gray-900 dark:text-white mb-1">
+                              {mealType}
+                            </h4>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                              {meal}
+                            </p>
+                          </div>
+                        ))}
                       </div>
-
-                      {/* Ingredients */}
-                      <div className="mb-4">
-                        <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Ingredients:</h4>
-                        <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                          {meal.ingredients.map((ingredient, idx) => (
-                            <li key={idx}>• {ingredient}</li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      <Button variant="secondary" className="w-full">
-                        View Recipe
-                      </Button>
                     </div>
                   </GlareCard>
                 </motion.div>
               ))}
             </div>
+
+            {/* Nutritional Summary */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
+              className="mt-12"
+            >
+              <Card className="p-8 bg-gradient-to-r from-emerald-500 to-blue-600 text-white">
+                <h3 className="text-2xl font-bold mb-4">📊 Weekly Summary</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                  <div className="text-center">
+                    <p className="text-3xl font-bold">{mealTypes.length}</p>
+                    <p className="text-sm opacity-90">Meals per day</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-3xl font-bold">7</p>
+                    <p className="text-sm opacity-90">Days planned</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-3xl font-bold">{calculateCalories(userProfile)}</p>
+                    <p className="text-sm opacity-90">Calories/day</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-3xl font-bold">{budget.split('-')[0]}</p>
+                    <p className="text-sm opacity-90">Budget range</p>
+                  </div>
+                </div>
+              </Card>
+            </motion.div>
           </motion.div>
         )}
       </div>
