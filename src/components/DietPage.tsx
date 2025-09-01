@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { DollarSign, Leaf, ChefHat, Download, Calendar, AlertCircle } from 'lucide-react'
 import { useAuth } from './../contexts/AuthContext'
 import { supabase } from './../lib/supabase'
-import { getMealPlan, type WeeklyMealPlan } from './../lib/openai'
+import { getMealPlanFromGemini, type WeeklyMealPlan } from './../lib/gemini'
 import { Button } from './ui/Button'
 import { Card, GlareCard } from './ui/Card'
 import jsPDF from 'jspdf'
@@ -56,7 +56,7 @@ export const DietPage: React.FC = () => {
           height: data.height,
           goal: data.goal,
           workout_frequency: data.workout_frequency,
-          target_weight: data.target_weight,
+          target_weight: data.target_target,
         }
         setUserProfile(profile)
         
@@ -106,52 +106,97 @@ export const DietPage: React.FC = () => {
     }
 
     setLoading(true)
-    console.log("🔄 Starting meal plan generation...")
+    console.log("🔄 Starting meal plan generation with Gemini...")
     
     try {
       const finalPreference = preference === 'Custom' ? customPreference : preference
       const mealTypes = getMealFrequency(userProfile.goal)
 
       const prompt = `
-      Create a detailed 7-day Indian meal plan based on the following user information:
-      
+      You are an expert Indian nutritionist creating personalized 7-day meal plans. 
+      Generate a detailed Indian meal plan based on the following user profile:
+
       USER PROFILE:
       - Age: ${userProfile.age} years
       - Current Weight: ${userProfile.weight} kg
       - Height: ${userProfile.height} cm
       - Goal Weight: ${userProfile.target_weight} kg
-      - Workout Frequency: ${userProfile.workout_frequency}
-      - Fitness Goal: ${userProfile.goal}
-      - Budget: ${budget}
+      - Workout Frequency: ${userProfile.workout_frequency} times per week
+      - Primary Fitness Goal: ${userProfile.goal}
+      - Weekly Food Budget: ${budget}
       - Dietary Preference: ${finalPreference}
+      - Meals per day: ${mealTypes.join(", ")}
+
+      NUTRITIONAL REQUIREMENTS:
+      - Adjust total daily calories based on goal:
+        * Bulking/Lean Bulk: 2500-3000 calories (calorie surplus)
+        * Cutting: 1500-1800 calories (calorie deficit) 
+        * Maintenance: 2000-2200 calories (maintenance)
+        * General Fitness: 1800-2200 calories
       
-      MEAL STRUCTURE:
-      ${mealTypes.length} meals per day: ${mealTypes.join(", ")}
-      
-      REQUIREMENTS:
+      - Macronutrient distribution:
+        * Protein: 25-35% of total calories
+        * Carbs: 40-50% of total calories  
+        * Fats: 20-30% of total calories
+
+      MEAL PLAN SPECIFICATIONS:
+      - 7 full days (Monday to Sunday)
+      - ${mealTypes.length} meals per day: ${mealTypes.join(", ")}
       - Focus on authentic Indian foods and ingredients
-      - Include portion sizes and cooking methods
-      - Adjust calories and macros based on the fitness goal
-      - Consider the budget constraints
-      - Respect dietary preferences
-      
+      - Include specific portion sizes in grams/cups/pieces
+      - Mention cooking methods (steamed, grilled, sautéed, etc.)
+      - Include calorie estimates for each meal
+      - Include protein estimates for each meal
+      - Ensure variety across days to prevent boredom
+      - Consider budget constraints for ingredients
+      - Respect dietary preferences and restrictions
+      - Include healthy snacks between main meals
+      - Suggest hydration (water, herbal teas, buttermilk, soyachunks, coconut water)
+
+      INDIAN FOOD FOCUS:
+      - Staples: Roti, rice, dal, sabzi, curries, salads, sprouts
+      - Proteins: Paneer, Soyachunks, chicken, fish, eggs, legumes, tofu
+      - Carbs: Brown rice, whole wheat, millets, oats, potatoes, milk
+      - Fats: Ghee, oils, nuts, seeds, avocado, peanuts
+      - Vegetables: Seasonal local vegetables, Chana
+      - Spices: Turmeric, cumin, coriander, ginger, garlic
+      - Snals: Makhana, roasted chana, nuts, yogurt
+
       OUTPUT FORMAT:
-      Return ONLY valid JSON with this structure:
+      Return ONLY valid JSON with this exact structure - no additional text, no markdown, no explanations:
       {
         "Day 1": {
-          "Breakfast": "Meal description with portions",
-          "Lunch": "Meal description with portions",
+          "Breakfast": "Detailed meal description with portions and calories. Example: 2 Masala dosa (150g) with coconut chutney (30g) and sambar (200ml) - 450 calories",
+          "Lunch": "Meal description with portions and calories",
+          "Snack": "Meal description with portions and calories",
+          "Dinner": "Meal description with portions and calories",
           ...
         },
-        "Day 2": { ... },
+        "Day 2": {
+          "Breakfast": "...",
+          "Lunch": "...",
+          "Snack": "...", 
+          "Dinner": "..."
+        },
         ...
-        "Day 7": { ... }
+        "Day 7": {
+          "Breakfast": "...",
+          "Lunch": "...",
+          "Snack": "...",
+          "Dinner": "..."
+        }
       }
+
+      IMPORTANT: Each meal description should include:
+      - Specific food items with quantities
+      - Cooking method (if relevant)
+      - Approximate calorie and protein count
+      - Portion sizes in measurable units
       `
 
-      console.log("📤 Sending prompt to OpenAI...")
-      const response = await getMealPlan(prompt)
-      console.log("✅ Successfully received meal plan:", response)
+      console.log("📤 Sending detailed prompt to Gemini API...")
+      const response = await getMealPlanFromGemini(prompt)
+      console.log("✅ Successfully received meal plan from Gemini:", response)
       setWeeklyMealPlan(response)
       
     } catch (error: unknown) {
@@ -168,8 +213,7 @@ export const DietPage: React.FC = () => {
   const calculateCalories = (profile: UserProfile | null): number => {
     if (!profile) return 2000
     
-    // Basic calorie calculation based on goal and user data
-    const baseCalories = 2000 // Default base
+    const baseCalories = 2000
     
     if (!profile.goal) return baseCalories
     
@@ -177,9 +221,9 @@ export const DietPage: React.FC = () => {
     switch (lowerGoal) {
       case 'bulking':
       case 'lean bulk':
-        return baseCalories + 500 // Surplus for muscle gain
+        return baseCalories + 500
       case 'cutting':
-        return baseCalories - 500 // Deficit for fat loss
+        return baseCalories - 500
       case 'maintenance':
       case 'general fitness':
       default:
@@ -190,12 +234,11 @@ export const DietPage: React.FC = () => {
   const downloadMealPlanPDF = () => {
     const doc = new jsPDF()
     
-    // Set initial coordinates
     let y = 20
     let page = 1
     
-    // Add header with logo/background
-    doc.setFillColor(16, 185, 129) // Emerald color
+    // Header
+    doc.setFillColor(16, 185, 129)
     doc.rect(0, 0, 210, 30, "F")
     doc.setTextColor(255, 255, 255)
     doc.setFontSize(20)
@@ -205,11 +248,10 @@ export const DietPage: React.FC = () => {
     doc.setFont("helvetica", "normal")
     doc.text("Your Personalized Meal Plan", 20, 27)
     
-    // Reset text color for content
     doc.setTextColor(0, 0, 0)
     y = 45
     
-    // Add user info section
+    // User info
     doc.setFontSize(16)
     doc.setFont("helvetica", "bold")
     doc.text("Weekly Meal Plan", 20, y)
@@ -229,15 +271,12 @@ export const DietPage: React.FC = () => {
     doc.text(`Workout Frequency: ${userProfile?.workout_frequency || "Not specified"}`, 120, y)
     y += 15
     
-    // Add meal plan content
+    // Meal plan content
     Object.entries(weeklyMealPlan).forEach(([day, meals]) => {
-      // Check if we need a new page
       if (y > 250) {
         doc.addPage()
         page++
         y = 20
-        
-        // Add header to new page
         doc.setFillColor(16, 185, 129)
         doc.rect(0, 0, 210, 30, "F")
         doc.setTextColor(255, 255, 255)
@@ -248,21 +287,16 @@ export const DietPage: React.FC = () => {
         y = 35
       }
       
-      // Day header
       doc.setFontSize(14)
       doc.setFont("helvetica", "bold")
       doc.text(day, 20, y)
       y += 8
       
-      // Meals for the day
       Object.entries(meals).forEach(([mealType, meal]) => {
-        // Check if we need a new page before adding meal
         if (y > 270) {
           doc.addPage()
           page++
           y = 20
-          
-          // Add header to new page
           doc.setFillColor(16, 185, 129)
           doc.rect(0, 0, 210, 30, "F")
           doc.setTextColor(255, 255, 255)
@@ -271,35 +305,27 @@ export const DietPage: React.FC = () => {
           doc.text(`STRIVE - Meal Plan (Page ${page})`, 20, 20)
           doc.setTextColor(0, 0, 0)
           y = 35
-          
-          // Re-add day header on new page
           doc.setFontSize(14)
           doc.setFont("helvetica", "bold")
           doc.text(day, 20, y)
           y += 8
         }
         
-        // Meal type
         doc.setFontSize(11)
         doc.setFont("helvetica", "bold")
-        const mealTypeText = `${mealType}:`
-        doc.text(mealTypeText, 25, y)
+        doc.text(`${mealType}:`, 25, y)
         y += 4
         
-        // Meal description with proper text wrapping
         doc.setFont("helvetica", "normal")
         doc.setFontSize(10)
         
         const splitText = doc.splitTextToSize(meal, 160)
         const textHeight = splitText.length * 4
         
-        // Check if text will fit on current page
         if (y + textHeight > 270) {
           doc.addPage()
           page++
           y = 20
-          
-          // Add header to new page
           doc.setFillColor(16, 185, 129)
           doc.rect(0, 0, 210, 30, "F")
           doc.setTextColor(255, 255, 255)
@@ -314,11 +340,9 @@ export const DietPage: React.FC = () => {
         y += textHeight + 6
       })
       
-      // Add space between days
       y += 10
     })
     
-    // Add footer with generation date
     const totalPages = doc.getNumberOfPages()
     for (let i = 1; i <= totalPages; i++) {
       doc.setPage(i)
@@ -327,7 +351,6 @@ export const DietPage: React.FC = () => {
       doc.text(`Generated on: ${new Date().toLocaleDateString()} - Page ${i} of ${totalPages}`, 20, 285)
     }
     
-    // Save the PDF
     doc.save("strive-meal-plan.pdf")
   }
 
@@ -349,7 +372,6 @@ export const DietPage: React.FC = () => {
           </p>
         </motion.div>
 
-        {/* Error Message */}
         {error && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -365,7 +387,6 @@ export const DietPage: React.FC = () => {
           </motion.div>
         )}
 
-        {/* Profile Incomplete Warning */}
         {!profileComplete && user && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -383,7 +404,6 @@ export const DietPage: React.FC = () => {
           </motion.div>
         )}
 
-        {/* Configuration */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -396,7 +416,6 @@ export const DietPage: React.FC = () => {
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              {/* Budget Selection */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                   <DollarSign className="w-4 h-4 inline mr-1" />
@@ -419,7 +438,6 @@ export const DietPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Preference Selection */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                   <Leaf className="w-4 h-4 inline mr-1" />
@@ -455,7 +473,6 @@ export const DietPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Meal Frequency Info */}
             {userProfile?.goal && (
               <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
                 <h3 className="font-semibold text-blue-800 dark:text-blue-300 mb-2">
@@ -489,7 +506,6 @@ export const DietPage: React.FC = () => {
           </Card>
         </motion.div>
 
-        {/* Weekly Meal Plans */}
         {Object.keys(weeklyMealPlan).length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -541,7 +557,6 @@ export const DietPage: React.FC = () => {
               ))}
             </div>
 
-            {/* Nutritional Summary */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
