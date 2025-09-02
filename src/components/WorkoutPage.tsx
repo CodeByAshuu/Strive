@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Dumbbell, Clock, Play } from 'lucide-react'
+import { Dumbbell, Clock, LocateIcon, Play } from 'lucide-react'
 import { Button } from './ui/Button'
 import { Card, GlareCard } from './ui/Card'
 import Model, { IExerciseData, IMuscleStats } from 'react-body-highlighter';  
@@ -63,6 +63,7 @@ const sampleWorkouts: Exercise[] = [
 export const WorkoutPage: React.FC = () => {
   const [frequency, setFrequency] = useState('')
   const [experience, setExperience] = useState('')
+  const [location, setLocation] = useState('')
   const [workout, setWorkout] = useState<Exercise[]>([])
   const [loading, setLoading] = useState(false)
 
@@ -76,6 +77,7 @@ export const WorkoutPage: React.FC = () => {
 
   const frequencies = ['2x per week', '3x per week', 'Push/Pull/Legs', 'Upper/Lower', 'Bro Split']
   const experiences = ['Beginner', 'Intermediate', 'Advanced']
+  const locations = ['Gym', 'Home', 'Outdoor']
 
   const data: IExerciseData[] = [
     {
@@ -184,7 +186,32 @@ export const WorkoutPage: React.FC = () => {
                   ))}
                 </div>
               </div>
+              
+              {/* Location */}
+            <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                  <LocateIcon className="w-4 h-4 inline mr-1" />
+                  Location
+                </label>
+                <div className="space-y-2">
+                  {locations.map((option) => (
+                    <button
+                      key={option}
+                      onClick={() => setLocation(option)}
+                      className={`w-full p-3 rounded-xl border text-left transition-all text-gray-200 ${
+                        frequency === option
+                          ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
+                          : 'border-gray-300 dark:border-gray-600 hover:border-emerald-300'
+                      }`}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
+            
+            
 
             <Button
               onClick={generateWorkout}
