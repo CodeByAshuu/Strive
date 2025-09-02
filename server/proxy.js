@@ -216,7 +216,7 @@ app.post('/api/generate-workout', async (req, res) => {
     WORKOUT LOCATION: ${location}
 
     REQUIREMENTS:
-    - Generate 4-6 exercises
+    - Generate 6-8 exercises
     - Include exercises appropriate for the location (${location})
     - Adjust difficulty based on experience level (${experience})
     - Focus on the target muscle groups

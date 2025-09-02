@@ -216,7 +216,7 @@ export const WorkoutPage: React.FC = () => {
               onClick={generateWorkout}
               disabled={!frequency || !experience || !location || selectedMuscles.length === 0}
               loading={loading}
-              className="w-full"
+              className="w-full flex justify-center items-center"
             >
               <Dumbbell className="w-5 h-5 mr-2" />
               Generate Workout Plan
@@ -291,13 +291,13 @@ export const WorkoutPage: React.FC = () => {
                           rel="noopener noreferrer"
                           className="inline-flex items-center justify-center w-full"
                         >
-                          <Button variant="secondary" className="w-full">
+                          <Button variant="secondary" className="w-full flex justify-center items-center">
                             <Play className="w-4 h-4 mr-2" />
                             Watch Tutorial
                           </Button>
                         </a>
                       ) : (
-                        <Button variant="secondary" className="w-full" disabled>
+                        <Button variant="secondary" className="w-full flex justify-center items-center" disabled>
                           <Play className="w-4 h-4 mr-2" />
                           No Tutorial Available
                         </Button>
