@@ -75,7 +75,7 @@ export const WorkoutPage: React.FC = () => {
     setLoading(false)
   }
 
-  const frequencies = ['2x per week', '3x per week', 'Push/Pull/Legs', 'Upper/Lower', 'Bro Split']
+  const frequencies = ['1x per week','2x per week', '3x per week', 'Push/Pull/Legs', 'Upper/Lower']
   const experiences = ['Beginner', 'Intermediate', 'Advanced']
   const locations = ['Gym', 'Home', 'Outdoor']
 
@@ -129,6 +129,7 @@ export const WorkoutPage: React.FC = () => {
               Customize Your Workout
             </h2>
 
+            {/* Body Highlight Model */}
             <div className="flex justify-center mb-12">
               <Model data={data} onClick={handleClick} />
               <Model
@@ -210,8 +211,6 @@ export const WorkoutPage: React.FC = () => {
                 </div>
               </div>
             </div>
-            
-            
 
             <Button
               onClick={generateWorkout}
