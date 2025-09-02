@@ -22,6 +22,7 @@
     "lucide-react": "^0.541.0",
     "openai": "^5.16.0",
     "react": "^18.3.1",
+    "react-body-highlighter": "^2.0.5",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.62.0",
     "react-router-dom": "^7.8.2"

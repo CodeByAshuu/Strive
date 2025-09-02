@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Dumbbell, Clock, Target, Play } from 'lucide-react'
+import { Dumbbell, Clock, Play } from 'lucide-react'
 import { Button } from './ui/Button'
 import { Card, GlareCard } from './ui/Card'
+import Model, { IExerciseData, IMuscleStats } from 'react-body-highlighter';  
+
 
 interface Exercise {
   name: string
@@ -59,7 +61,6 @@ const sampleWorkouts: Exercise[] = [
 ]
 
 export const WorkoutPage: React.FC = () => {
-  const [muscleGroup, setMuscleGroup] = useState('')
   const [frequency, setFrequency] = useState('')
   const [experience, setExperience] = useState('')
   const [workout, setWorkout] = useState<Exercise[]>([])
@@ -73,12 +74,32 @@ export const WorkoutPage: React.FC = () => {
     setLoading(false)
   }
 
-  const muscleGroups = ['Chest', 'Back', 'Legs', 'Arms', 'Shoulders', 'Full Body']
   const frequencies = ['2x per week', '3x per week', 'Push/Pull/Legs', 'Upper/Lower', 'Bro Split']
   const experiences = ['Beginner', 'Intermediate', 'Advanced']
 
+  const data: IExerciseData[] = [
+    {
+      name: "Bench Press",
+      muscles: ["chest", "triceps", "front-deltoids"]
+    },
+    {
+      name: "Tricep Pushdown",
+      muscles: ["triceps"]
+    }
+  ];
+
+  const handleClick = React.useCallback(({ muscle, data }: IMuscleStats) => {
+    const { exercises, frequency } = data;
+
+    alert(
+      `You clicked the ${muscle}! You've worked out this muscle ${frequency} times through the following exercises: ${JSON.stringify(
+        exercises
+      )}`
+    );
+  }, []);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pb-24">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pt-24">
       <div className="container mx-auto px-4 py-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -92,6 +113,7 @@ export const WorkoutPage: React.FC = () => {
             AI-generated workout routines tailored to your goals and experience level
           </p>
         </motion.div>
+        
 
         {/* Configuration */}
         <motion.div
@@ -104,30 +126,18 @@ export const WorkoutPage: React.FC = () => {
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
               Customize Your Workout
             </h2>
+
+            <div className="flex justify-center mb-12">
+              <Model data={data} onClick={handleClick} />
+              <Model
+                type="posterior"
+                data={data}
+                highlightedColors={["#e65a5a", "#db2f2f"]}
+                onClick={handleClick}
+              />
+            </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              {/* Muscle Group */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                  <Target className="w-4 h-4 inline mr-1" />
-                  Target Muscle
-                </label>
-                <div className="space-y-2">
-                  {muscleGroups.map((option) => (
-                    <button
-                      key={option}
-                      onClick={() => setMuscleGroup(option)}
-                      className={`w-full p-3 rounded-xl border text-left transition-all text-gray-200 ${
-                        muscleGroup === option
-                          ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
-                          : 'border-gray-300 dark:border-gray-600 hover:border-emerald-300'
-                      }`}
-                    >
-                      {option}
-                    </button>
-                  ))}
-                </div>
-              </div>
 
               {/* Frequency */}
               <div>
@@ -178,7 +188,7 @@ export const WorkoutPage: React.FC = () => {
 
             <Button
               onClick={generateWorkout}
-              disabled={!muscleGroup || !frequency || !experience}
+              disabled={!frequency || !experience || !location}
               loading={loading}
               className="w-full"
             >
@@ -196,7 +206,7 @@ export const WorkoutPage: React.FC = () => {
             transition={{ delay: 0.3 }}
           >
             <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-8">
-              Your {muscleGroup} Workout
+              Your Workout
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
