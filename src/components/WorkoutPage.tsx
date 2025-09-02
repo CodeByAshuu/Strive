@@ -1,104 +1,93 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Dumbbell, Clock, LocateIcon, Play } from 'lucide-react'
 import { Button } from './ui/Button'
 import { Card, GlareCard } from './ui/Card'
 import Model, { IExerciseData, IMuscleStats } from 'react-body-highlighter';  
+import type { Muscle } from 'react-body-highlighter'
+import { generateWorkoutPlan, type WorkoutPlan, type Exercise as GeneratedExercise } from '../lib/workout'
 
 
-interface Exercise {
-  name: string
-  sets: number
-  reps: string
-  rest: string
-  muscle: string
-  difficulty: string
-  videoUrl: string
-  instructions: string[]
-}
-
-const sampleWorkouts: Exercise[] = [
-  {
-    name: 'Bench Press',
-    sets: 4,
-    reps: '8-12',
-    rest: '2-3 min',
-    muscle: 'Chest',
-    difficulty: 'Intermediate',
-    videoUrl: 'https://youtube.com/watch?v=bench-press',
-    instructions: ['Lie flat on bench', 'Grip bar slightly wider than shoulders', 'Lower to chest', 'Press up explosively']
-  },
-  {
-    name: 'Barbell Rows',
-    sets: 4,
-    reps: '8-10',
-    rest: '2-3 min',
-    muscle: 'Back',
-    difficulty: 'Intermediate',
-    videoUrl: 'https://youtube.com/watch?v=barbell-rows',
-    instructions: ['Bend at hips', 'Keep back straight', 'Row to lower chest', 'Squeeze shoulder blades']
-  },
-  {
-    name: 'Overhead Press',
-    sets: 3,
-    reps: '8-10',
-    rest: '2 min',
-    muscle: 'Shoulders',
-    difficulty: 'Intermediate',
-    videoUrl: 'https://youtube.com/watch?v=overhead-press',
-    instructions: ['Start at shoulder height', 'Press straight up', 'Keep core tight', 'Lower with control']
-  },
-  {
-    name: 'Romanian Deadlifts',
-    sets: 3,
-    reps: '10-12',
-    rest: '2 min',
-    muscle: 'Legs',
-    difficulty: 'Intermediate',
-    videoUrl: 'https://youtube.com/watch?v=rdl',
-    instructions: ['Hinge at hips', 'Keep knees slightly bent', 'Feel hamstring stretch', 'Drive hips forward']
-  }
-]
+// Supported muscles by the body highlight component
+const SUPPORTED_MUSCLES: readonly Muscle[] = [
+  // Back
+  'trapezius',
+  'upper-back',
+  'lower-back',
+  // Chest
+  'chest',
+  // Arms
+  'biceps',
+  'triceps',
+  'forearm',
+  'back-deltoids',
+  'front-deltoids',
+  // Abs
+  'abs',
+  'obliques',
+  // Legs
+  'adductor',
+  'hamstring',
+  'quadriceps',
+  'abductors',
+  'calves',
+  'gluteal',
+  // Head
+  'head',
+  'neck'
+ ] as const
 
 export const WorkoutPage: React.FC = () => {
   const [frequency, setFrequency] = useState('')
   const [experience, setExperience] = useState('')
   const [location, setLocation] = useState('')
-  const [workout, setWorkout] = useState<Exercise[]>([])
+  const [selectedMuscles, setSelectedMuscles] = useState<Muscle[]>([])
+  const [workoutPlan, setWorkoutPlan] = useState<WorkoutPlan | null>(null)
   const [loading, setLoading] = useState(false)
 
   const generateWorkout = async () => {
     setLoading(true)
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    setWorkout(sampleWorkouts)
-    setLoading(false)
+    try {
+      const plan = await generateWorkoutPlan(
+        selectedMuscles,
+        frequency,
+        experience,
+        location
+      )
+      setWorkoutPlan(plan)
+    } catch (error) {
+      console.error(error)
+      alert(
+        error instanceof Error ? error.message : 'Failed to generate workout plan'
+      )
+    } finally {
+      setLoading(false)
+    }
   }
 
   const frequencies = ['1x per week','2x per week', '3x per week', 'Push/Pull/Legs', 'Upper/Lower']
   const experiences = ['Beginner', 'Intermediate', 'Advanced']
   const locations = ['Gym', 'Home', 'Outdoor']
 
-  const data: IExerciseData[] = [
-    {
-      name: "Bench Press",
-      muscles: ["chest", "triceps", "front-deltoids"]
-    },
-    {
-      name: "Tricep Pushdown",
-      muscles: ["triceps"]
-    }
-  ];
+  // Build highlighting data from selected muscles
+  const data: IExerciseData[] = useMemo(() => {
+    return selectedMuscles.map((muscle: Muscle) => ({
+      name: `Selected - ${muscle}`,
+      muscles: [muscle],
+      frequency: 1
+    }))
+  }, [selectedMuscles])
 
-  const handleClick = React.useCallback(({ muscle, data }: IMuscleStats) => {
-    const { exercises, frequency } = data;
-
-    alert(
-      `You clicked the ${muscle}! You've worked out this muscle ${frequency} times through the following exercises: ${JSON.stringify(
-        exercises
-      )}`
-    );
-  }, []);
+  const handleClick = React.useCallback(({ muscle }: IMuscleStats) => {
+    if (!muscle) return
+    if (!SUPPORTED_MUSCLES.includes(muscle)) return
+    setWorkoutPlan(null)
+    setSelectedMuscles((prev) =>
+      prev.includes(muscle)
+        ? prev.filter((m) => m !== muscle)
+        : [...prev, muscle]
+    )
+  }, [])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pt-24">
@@ -130,14 +119,25 @@ export const WorkoutPage: React.FC = () => {
             </h2>
 
             {/* Body Highlight Model */}
-            <div className="flex justify-center mb-12">
-              <Model data={data} onClick={handleClick} />
-              <Model
-                type="posterior"
-                data={data}
-                highlightedColors={["#e65a5a", "#db2f2f"]}
-                onClick={handleClick}
-              />
+            <div className="flex flex-col items-center gap-4 mb-12">
+              <div className="flex justify-center gap-6">
+                <Model data={data} onClick={handleClick} highlightedColors={["#0984e3", "#74b9ff"]} />
+                <Model
+                  type="posterior"
+                  data={data}
+                  highlightedColors={["#e65a5a", "#db2f2f"]}
+                  onClick={handleClick}
+                />
+              </div>
+              {selectedMuscles.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {selectedMuscles.map((m) => (
+                    <span key={m} className="px-3 py-1 rounded-full text-sm bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300">
+                      {m}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -200,7 +200,7 @@ export const WorkoutPage: React.FC = () => {
                       key={option}
                       onClick={() => setLocation(option)}
                       className={`w-full p-3 rounded-xl border text-left transition-all text-gray-200 ${
-                        frequency === option
+                        location === option
                           ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
                           : 'border-gray-300 dark:border-gray-600 hover:border-emerald-300'
                       }`}
@@ -214,7 +214,7 @@ export const WorkoutPage: React.FC = () => {
 
             <Button
               onClick={generateWorkout}
-              disabled={!frequency || !experience || !location}
+              disabled={!frequency || !experience || !location || selectedMuscles.length === 0}
               loading={loading}
               className="w-full"
             >
@@ -225,18 +225,18 @@ export const WorkoutPage: React.FC = () => {
         </motion.div>
 
         {/* Workout Plan */}
-        {workout.length > 0 && (
+        {workoutPlan && workoutPlan.exercises.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
             <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-8">
-              Your Workout
+              {workoutPlan.workoutType || 'Your Workout'}
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {workout.map((exercise, index) => (
+              {workoutPlan.exercises.map((exercise: GeneratedExercise, index: number) => (
                 <motion.div
                   key={exercise.name}
                   initial={{ opacity: 0, y: 20 }}
@@ -284,15 +284,34 @@ export const WorkoutPage: React.FC = () => {
                         </ul>
                       </div>
 
-                      <Button variant="secondary" className="w-full">
-                        <Play className="w-4 h-4 mr-2" />
-                        Watch Tutorial
-                      </Button>
+                      {exercise.videoUrl ? (
+                        <a
+                          href={exercise.videoUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center w-full"
+                        >
+                          <Button variant="secondary" className="w-full">
+                            <Play className="w-4 h-4 mr-2" />
+                            Watch Tutorial
+                          </Button>
+                        </a>
+                      ) : (
+                        <Button variant="secondary" className="w-full" disabled>
+                          <Play className="w-4 h-4 mr-2" />
+                          No Tutorial Available
+                        </Button>
+                      )}
                     </div>
                   </GlareCard>
                 </motion.div>
               ))}
             </div>
+            {workoutPlan.totalDuration && (
+              <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
+                Total Duration: {workoutPlan.totalDuration} • Exercises: {workoutPlan.totalExercises}
+              </p>
+            )}
           </motion.div>
         )}
       </div>
