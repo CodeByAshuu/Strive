@@ -318,7 +318,7 @@ export const BodyExplorer: React.FC = () => {
 
   if (currentSection === 'main') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pb-24">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pt-16">
         <div className="container mx-auto px-4 py-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -330,9 +330,9 @@ export const BodyExplorer: React.FC = () => {
                 Body Explorer
               </span>
             </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            {/* <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
               Your complete fitness toolkit for calculations, challenges, stretches, and workout planning
-            </p>
+            </p> */}
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
@@ -376,22 +376,22 @@ export const BodyExplorer: React.FC = () => {
 
   if (currentSection === 'calculator') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pb-24">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pt-20 pb-8">
         <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center mb-8">
-            <Button
-              variant="ghost"
-              onClick={() => setCurrentSection('main')}
-              className="mr-4  flex justify-center items-center"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button>
+          <div className="flex justify-between items-center mb-8">
             <h1 className="text-4xl font-bold">
               <span className="bg-gradient-to-r from-emerald-500 to-teal-600 bg-clip-text text-transparent">
                 Fitness Calculators
               </span>
             </h1>
+            <Button
+              variant="ghost"
+              onClick={() => setCurrentSection('main')}
+              className="mr-4 flex justify-center items-center text-white hover:text-gray-900"
+            >
+              <ArrowLeft className="w-4 h-4 mr-1" />
+              Back
+            </Button>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -584,22 +584,22 @@ export const BodyExplorer: React.FC = () => {
 
   if (currentSection === 'funzone') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pb-24">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pt-20 pb-8">
         <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center mb-8">
-            <Button
-              variant="ghost"
-              onClick={() => setCurrentSection('main')}
-              className="mr-4 flex justify-center items-center"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button>
+          <div className="flex justify-between items-center mb-8">
             <h1 className="text-4xl font-bold">
-              <span className="bg-gradient-to-r from-teal-500 to-cyan-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-emerald-500 to-teal-600 bg-clip-text text-transparent">
                 Fun Zone
               </span>
             </h1>
+            <Button
+              variant="ghost"
+              onClick={() => setCurrentSection('main')}
+              className="mr-4 flex justify-center items-center text-white hover:text-gray-900"
+            >
+              <ArrowLeft className="w-4 h-4 mr-1" />
+              Back
+            </Button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -647,22 +647,22 @@ export const BodyExplorer: React.FC = () => {
 
   if (currentSection === 'stretch') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pb-24">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pt-20 pb-8">
         <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center mb-8">
-            <Button
-              variant="ghost"
-              onClick={() => setCurrentSection('main')}
-              className="mr-4 flex justify-center items-center"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button>
+          <div className="flex justify-between items-center mb-8">
             <h1 className="text-4xl font-bold">
-              <span className="bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-emerald-500 to-teal-600 bg-clip-text text-transparent">
                 Stretch Library
               </span>
             </h1>
+            <Button
+              variant="ghost"
+              onClick={() => setCurrentSection('main')}
+              className="mr-4 flex justify-center items-center text-white hover:text-gray-900"
+            >
+              <ArrowLeft className="w-4 h-4 mr-1" />
+              Back
+            </Button>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -746,26 +746,26 @@ export const BodyExplorer: React.FC = () => {
 
   if (currentSection === 'split') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pb-24">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pb-8 pt-16">
         <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center mb-8">
-            <Button
-              variant="ghost"
-              onClick={() => setCurrentSection('main')}
-              className="mr-4 flex justify-center items-center"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button>
+          <div className="flex justify-between items-center mb-8">
             <h1 className="text-4xl font-bold">
-              <span className="bg-gradient-to-r from-blue-500 to-emerald-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-emerald-500 to-teal-600 bg-clip-text text-transparent">
                 Split Generator
               </span>
             </h1>
+            <Button
+              variant="ghost"
+              onClick={() => setCurrentSection('main')}
+              className="mr-4 flex justify-center items-center text-white hover:text-gray-900"
+            >
+              <ArrowLeft className="w-4 h-4 mr-1" />
+              Back
+            </Button>
           </div>
 
-          <div className="max-w-4xl mx-auto">
-            <Card className="p-8 mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <Card className="p-8 mb-8 flex-1">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
                 Configure Your Workout Split
               </h2>
@@ -782,7 +782,7 @@ export const BodyExplorer: React.FC = () => {
                       <button
                         key={level}
                         onClick={() => setSplitConfig(prev => ({ ...prev, experience: level }))}
-                        className={`w-full p-3 rounded-xl border text-left transition-all ${
+                        className={`w-full p-3 rounded-xl border text-left transition-all text-gray-200 ${
                           splitConfig.experience === level
                             ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
                             : 'border-gray-300 dark:border-gray-600 hover:border-emerald-300'
@@ -805,7 +805,7 @@ export const BodyExplorer: React.FC = () => {
                       <button
                         key={days}
                         onClick={() => setSplitConfig(prev => ({ ...prev, days }))}
-                        className={`w-full p-3 rounded-xl border text-left transition-all ${
+                        className={`w-full p-3 rounded-xl border text-left transition-all text-gray-200 ${
                           splitConfig.days === days
                             ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
                             : 'border-gray-300 dark:border-gray-600 hover:border-emerald-300'
@@ -828,7 +828,7 @@ export const BodyExplorer: React.FC = () => {
                       <button
                         key={location}
                         onClick={() => setSplitConfig(prev => ({ ...prev, location }))}
-                        className={`w-full p-3 rounded-xl border text-left transition-all ${
+                        className={`w-full p-3 rounded-xl border text-left transition-all text-gray-200 ${
                           splitConfig.location === location
                             ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
                             : 'border-gray-300 dark:border-gray-600 hover:border-emerald-300'
@@ -848,15 +848,21 @@ export const BodyExplorer: React.FC = () => {
                     <input
                       type="checkbox"
                       checked={splitConfig.cardio}
-                      onChange={(e) => setSplitConfig(prev => ({ ...prev, cardio: e.target.checked }))}
+                      onChange={(e) =>
+                        setSplitConfig((prev) => ({ ...prev, cardio: e.target.checked }))
+                      }
                       className="sr-only"
                     />
-                    <div className={`w-12 h-6 rounded-full transition-colors ${
-                      splitConfig.cardio ? 'bg-emerald-500' : 'bg-gray-300 dark:bg-gray-600'
-                    }`}>
-                      <div className={`w-5 h-5 bg-white rounded-full shadow-md transform transition-transform ${
-                        splitConfig.cardio ? 'translate-x-6' : 'translate-x-0.5'
-                      } mt-0.5`} />
+                    <div
+                      className={`w-12 h-6 rounded-full transition-colors relative ${
+                        splitConfig.cardio ? "bg-emerald-500" : "bg-gray-300 dark:bg-gray-600"
+                      }`}
+                    >
+                      <div
+                        className={`absolute top-[2.2px] left-0.5 w-5 h-5 bg-white rounded-full shadow-md transform transition-transform ${
+                          splitConfig.cardio ? "translate-x-6" : "translate-x-0"
+                        }`}
+                      />
                     </div>
                   </div>
                   <span className="text-gray-700 dark:text-gray-300 flex items-center">
@@ -865,6 +871,7 @@ export const BodyExplorer: React.FC = () => {
                   </span>
                 </label>
               </div>
+
 
               {/* User Goal Display */}
               {userProfile?.goal && (
@@ -892,12 +899,12 @@ export const BodyExplorer: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
               >
-                <Card className="p-8">
+                <Card className="p-8 flex-2">
                   <div className="flex items-center justify-between mb-6">
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                       Your Weekly Split
                     </h2>
-                    <Button onClick={downloadSplitPDF} variant="secondary">
+                    <Button onClick={downloadSplitPDF} variant="secondary" className='flex justify-center items-center'>
                       <Download className="w-4 h-4 mr-2" />
                       Download PDF
                     </Button>
