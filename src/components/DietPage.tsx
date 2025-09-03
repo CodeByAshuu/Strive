@@ -426,7 +426,7 @@ export const DietPage: React.FC = () => {
                     <button
                       key={option}
                       onClick={() => setBudget(option)}
-                      className={`w-full p-3 rounded-xl border text-left transition-all dark:text-gray-200 ${
+                      className={`w-full p-3 rounded-xl border text-left transition-all dark:text-gray-200 py-8 ${
                         budget === option
                           ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
                           : 'border-gray-300 dark:border-gray-600 hover:border-emerald-300'
