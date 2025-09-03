@@ -1,187 +1,931 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Target, Play, Info } from 'lucide-react'
+import { Calculator, Gamepad2, StretchVertical as Stretch, Dumbbell, ArrowLeft, Download, Target, Clock, MapPin, Zap } from 'lucide-react'
 import { Card, GlareCard } from './ui/Card'
 import { Button } from './ui/Button'
+import { useAuth } from './../contexts/AuthContext'
+import { supabase } from './../lib/supabase'
+import jsPDF from 'jspdf'
 
-interface Exercise {
-  name: string
-  difficulty: string
-  equipment: string
-  instructions: string[]
-  videoUrl: string
+type Section = 'main' | 'calculator' | 'funzone' | 'stretch' | 'split'
+
+interface UserProfile {
+  age: number | null
+  weight: number | null
+  height: number | null
+  goal: string | null
+  workout_frequency: string | null
+  target_weight: number | null
 }
 
-const muscleGroups = [
-  { name: 'Chest', exercises: [
-    { name: 'Push-ups', difficulty: 'Beginner', equipment: 'Bodyweight', instructions: ['Start in plank position', 'Lower chest to floor', 'Push back up'], videoUrl: '#' },
-    { name: 'Bench Press', difficulty: 'Intermediate', equipment: 'Barbell', instructions: ['Lie on bench', 'Lower bar to chest', 'Press up'], videoUrl: '#' },
-  ]},
-  { name: 'Back', exercises: [
-    { name: 'Pull-ups', difficulty: 'Intermediate', equipment: 'Pull-up bar', instructions: ['Hang from bar', 'Pull chin over bar', 'Lower with control'], videoUrl: '#' },
-    { name: 'Rows', difficulty: 'Beginner', equipment: 'Resistance band', instructions: ['Pull band to chest', 'Squeeze shoulder blades', 'Return slowly'], videoUrl: '#' },
-  ]},
-  { name: 'Arms', exercises: [
-    { name: 'Bicep Curls', difficulty: 'Beginner', equipment: 'Dumbbells', instructions: ['Keep elbows still', 'Curl weight up', 'Lower slowly'], videoUrl: '#' },
-    { name: 'Tricep Dips', difficulty: 'Intermediate', equipment: 'Chair/Bench', instructions: ['Place hands on edge', 'Lower body down', 'Push back up'], videoUrl: '#' },
-  ]},
-  { name: 'Legs', exercises: [
-    { name: 'Squats', difficulty: 'Beginner', equipment: 'Bodyweight', instructions: ['Feet shoulder-width apart', 'Lower like sitting', 'Stand back up'], videoUrl: '#' },
-    { name: 'Lunges', difficulty: 'Beginner', equipment: 'Bodyweight', instructions: ['Step forward', 'Lower back knee', 'Return to standing'], videoUrl: '#' },
-  ]},
-  { name: 'Core', exercises: [
-    { name: 'Plank', difficulty: 'Beginner', equipment: 'Bodyweight', instructions: ['Hold straight line', 'Keep core tight', 'Breathe steadily'], videoUrl: '#' },
-    { name: 'Crunches', difficulty: 'Beginner', equipment: 'Bodyweight', instructions: ['Lie on back', 'Lift shoulders up', 'Lower slowly'], videoUrl: '#' },
-  ]},
-  { name: 'Shoulders', exercises: [
-    { name: 'Shoulder Press', difficulty: 'Beginner', equipment: 'Dumbbells', instructions: ['Start at shoulder height', 'Press straight up', 'Lower with control'], videoUrl: '#' },
-    { name: 'Lateral Raises', difficulty: 'Beginner', equipment: 'Dumbbells', instructions: ['Arms at sides', 'Lift out to sides', 'Lower slowly'], videoUrl: '#' },
-  ]},
+interface Challenge {
+  id: string
+  title: string
+  description: string
+  duration: string
+  difficulty: string
+  completed: boolean
+}
+
+interface Stretch {
+  name: string
+  duration: string
+  instructions: string[]
+  difficulty: string
+}
+
+const challenges: Challenge[] = [
+  {
+    id: '30-day-pushup',
+    title: '30-Day Push-up Challenge',
+    description: 'Build upper body strength with progressive push-up training',
+    duration: '30 days',
+    difficulty: 'Intermediate',
+    completed: false
+  },
+  {
+    id: 'plank-challenge',
+    title: 'Plank Challenge',
+    description: 'Strengthen your core with daily plank holds',
+    duration: '21 days',
+    difficulty: 'Beginner',
+    completed: false
+  },
+  {
+    id: 'core-crusher',
+    title: 'Core Crusher Challenge',
+    description: 'Intense core workout routine for defined abs',
+    duration: '14 days',
+    difficulty: 'Advanced',
+    completed: false
+  }
 ]
 
-export const BodyExplorer: React.FC = () => {
-  const [selectedMuscle, setSelectedMuscle] = useState<string>('')
-  const [selectedExercises, setSelectedExercises] = useState<Exercise[]>([])
+const muscleStretches = {
+  'Hamstrings': [
+    { name: 'Standing Forward Fold', duration: '30-60s', instructions: ['Stand with feet hip-width apart', 'Slowly fold forward', 'Let arms hang naturally'], difficulty: 'Beginner' },
+    { name: 'Seated Hamstring Stretch', duration: '30s each leg', instructions: ['Sit with one leg extended', 'Reach toward your toes', 'Keep back straight'], difficulty: 'Beginner' }
+  ],
+  'Quadriceps': [
+    { name: 'Standing Quad Stretch', duration: '30s each leg', instructions: ['Stand on one leg', 'Pull heel to glute', 'Keep knees together'], difficulty: 'Beginner' },
+    { name: 'Couch Stretch', duration: '60-90s each leg', instructions: ['Place back foot on couch', 'Lunge forward', 'Feel stretch in hip flexors'], difficulty: 'Intermediate' }
+  ],
+  'Back': [
+    { name: 'Cat-Cow Stretch', duration: '60s', instructions: ['Start on hands and knees', 'Arch and round your back', 'Move slowly and controlled'], difficulty: 'Beginner' },
+    { name: 'Child\'s Pose', duration: '60-120s', instructions: ['Kneel on floor', 'Sit back on heels', 'Reach arms forward'], difficulty: 'Beginner' }
+  ],
+  'Shoulders': [
+    { name: 'Cross-Body Stretch', duration: '30s each arm', instructions: ['Pull arm across chest', 'Use other arm to assist', 'Feel stretch in shoulder'], difficulty: 'Beginner' },
+    { name: 'Overhead Tricep Stretch', duration: '30s each arm', instructions: ['Reach arm overhead', 'Bend elbow behind head', 'Pull with other hand'], difficulty: 'Beginner' }
+  ],
+  'Chest': [
+    { name: 'Doorway Chest Stretch', duration: '30-60s', instructions: ['Place forearm on doorframe', 'Step forward gently', 'Feel stretch across chest'], difficulty: 'Beginner' },
+    { name: 'Wall Angels', duration: '60s', instructions: ['Stand against wall', 'Move arms up and down', 'Keep contact with wall'], difficulty: 'Beginner' }
+  ],
+  'Calves': [
+    { name: 'Wall Calf Stretch', duration: '30s each leg', instructions: ['Place hands on wall', 'Step back with one leg', 'Keep heel down'], difficulty: 'Beginner' },
+    { name: 'Seated Calf Stretch', duration: '30s each leg', instructions: ['Sit with leg extended', 'Pull toes toward shin', 'Feel stretch in calf'], difficulty: 'Beginner' }
+  ]
+}
 
-  const handleMuscleClick = (muscleName: string) => {
-    setSelectedMuscle(muscleName)
-    const muscle = muscleGroups.find(m => m.name === muscleName)
-    setSelectedExercises(muscle?.exercises || [])
+export const BodyExplorer: React.FC = () => {
+  const [currentSection, setCurrentSection] = useState<Section>('main')
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
+  const { user } = useAuth()
+
+  // Calculator states
+  const [bmi, setBmi] = useState({ height: '', weight: '', result: 0 })
+  const [bmr, setBmr] = useState({ age: '', gender: 'male', weight: '', height: '', activity: '1.2', result: 0 })
+  const [oneRepMax, setOneRepMax] = useState({ weight: '', reps: '', result: 0 })
+
+  // Stretch states
+  const [selectedMuscle, setSelectedMuscle] = useState<string>('Hamstrings')
+
+  // Split generator states
+  const [splitConfig, setSplitConfig] = useState({
+    experience: '',
+    days: '',
+    location: '',
+    cardio: false
+  })
+  const [generatedSplit, setGeneratedSplit] = useState<any>(null)
+
+  useEffect(() => {
+    if (user) {
+      fetchUserProfile()
+    }
+  }, [user])
+
+  const fetchUserProfile = async () => {
+    if (!user) return
+
+    try {
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .single()
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error fetching profile:', error)
+        return
+      }
+
+      if (data) {
+        setUserProfile({
+          age: data.age,
+          weight: data.weight,
+          height: data.height,
+          goal: data.goal,
+          workout_frequency: data.workout_frequency,
+          target_weight: data.target_weight,
+        })
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error)
+    }
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pb-24">
-      <div className="container mx-auto px-4 py-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
-        >
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            🎯 Body Explorer
-          </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Click on muscle groups to discover targeted exercises and tutorials
-          </p>
-        </motion.div>
+  // Calculator functions
+  const calculateBMI = () => {
+    const heightM = parseFloat(bmi.height) / 100
+    const weightKg = parseFloat(bmi.weight)
+    if (heightM && weightKg) {
+      const result = weightKg / (heightM * heightM)
+      setBmi(prev => ({ ...prev, result: Math.round(result * 10) / 10 }))
+    }
+  }
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Body Diagram */}
+  const calculateBMR = () => {
+    const { age, gender, weight, height, activity } = bmr
+    if (age && weight && height) {
+      let result
+      if (gender === 'male') {
+        result = 88.362 + (13.397 * parseFloat(weight)) + (4.799 * parseFloat(height)) - (5.677 * parseFloat(age))
+      } else {
+        result = 447.593 + (9.247 * parseFloat(weight)) + (3.098 * parseFloat(height)) - (4.330 * parseFloat(age))
+      }
+      result *= parseFloat(activity)
+      setBmr(prev => ({ ...prev, result: Math.round(result) }))
+    }
+  }
+
+  const calculateOneRepMax = () => {
+    const weight = parseFloat(oneRepMax.weight)
+    const reps = parseFloat(oneRepMax.reps)
+    if (weight && reps) {
+      const result = weight * (1 + reps / 30)
+      setOneRepMax(prev => ({ ...prev, result: Math.round(result * 10) / 10 }))
+    }
+  }
+
+  const getBMICategory = (bmi: number) => {
+    if (bmi < 18.5) return { category: 'Underweight', color: 'text-blue-600' }
+    if (bmi < 25) return { category: 'Normal', color: 'text-green-600' }
+    if (bmi < 30) return { category: 'Overweight', color: 'text-yellow-600' }
+    return { category: 'Obese', color: 'text-red-600' }
+  }
+
+  const generateWorkoutSplit = () => {
+    const { experience, days, location, cardio } = splitConfig
+    const goal = userProfile?.goal || 'General Fitness'
+
+    let split: any = {}
+
+    if (days === '3') {
+      split = {
+        'Day 1': 'Full Body A',
+        'Day 2': 'Rest',
+        'Day 3': 'Full Body B',
+        'Day 4': 'Rest',
+        'Day 5': 'Full Body C',
+        'Day 6': 'Rest',
+        'Day 7': 'Rest'
+      }
+    } else if (days === '4') {
+      split = {
+        'Day 1': 'Upper Body',
+        'Day 2': 'Lower Body',
+        'Day 3': 'Rest',
+        'Day 4': 'Push',
+        'Day 5': 'Pull',
+        'Day 6': 'Rest',
+        'Day 7': 'Rest'
+      }
+    } else if (days === '5') {
+      split = {
+        'Day 1': 'Push',
+        'Day 2': 'Pull',
+        'Day 3': 'Legs',
+        'Day 4': 'Rest',
+        'Day 5': 'Push',
+        'Day 6': 'Pull',
+        'Day 7': 'Rest'
+      }
+    } else if (days === '6') {
+      split = {
+        'Day 1': 'Push',
+        'Day 2': 'Pull',
+        'Day 3': 'Legs',
+        'Day 4': 'Push',
+        'Day 5': 'Pull',
+        'Day 6': 'Legs',
+        'Day 7': 'Rest'
+      }
+    }
+
+    if (cardio) {
+      Object.keys(split).forEach(day => {
+        if (split[day] === 'Rest') {
+          split[day] = 'Cardio/Active Recovery'
+        }
+      })
+    }
+
+    setGeneratedSplit({ split, goal, experience, location })
+  }
+
+  const downloadSplitPDF = () => {
+    if (!generatedSplit) return
+
+    const doc = new jsPDF()
+    
+    // Header
+    doc.setFillColor(16, 185, 129)
+    doc.rect(0, 0, 210, 30, 'F')
+    doc.setTextColor(255, 255, 255)
+    doc.setFontSize(20)
+    doc.text('FITFORGE', 20, 18)
+    doc.setFontSize(12)
+    doc.text('Your Personalized Workout Split', 20, 25)
+
+    doc.setTextColor(0, 0, 0)
+    
+    let y = 45
+    doc.setFontSize(16)
+    doc.text('Weekly Workout Split', 20, y)
+    y += 10
+
+    doc.setFontSize(10)
+    doc.text(`Goal: ${generatedSplit.goal}`, 20, y)
+    doc.text(`Experience: ${generatedSplit.experience}`, 120, y)
+    y += 5
+    doc.text(`Location: ${generatedSplit.location}`, 20, y)
+    y += 15
+
+    Object.entries(generatedSplit.split).forEach(([day, workout]) => {
+      doc.setFontSize(12)
+      doc.setFont(undefined, 'bold')
+      doc.text(`${day}:`, 20, y)
+      doc.setFont(undefined, 'normal')
+      doc.text(`${workout}`, 60, y)
+      y += 8
+    })
+
+    doc.save('fitforge-workout-split.pdf')
+  }
+
+  const mainSections = [
+    {
+      id: 'calculator',
+      title: 'Calculator',
+      description: 'BMI, BMR, Calorie & 1RM calculators',
+      icon: Calculator,
+      gradient: 'from-emerald-500 to-teal-600'
+    },
+    {
+      id: 'funzone',
+      title: 'Fun Zone',
+      description: 'Challenges, polls & fitness games',
+      icon: Gamepad2,
+      gradient: 'from-teal-500 to-cyan-600'
+    },
+    {
+      id: 'stretch',
+      title: 'Stretch Library',
+      description: 'Targeted stretches for every muscle',
+      icon: Stretch,
+      gradient: 'from-cyan-500 to-blue-600'
+    },
+    {
+      id: 'split',
+      title: 'Split Generator',
+      description: 'AI-powered workout split creation',
+      icon: Dumbbell,
+      gradient: 'from-blue-500 to-emerald-600'
+    }
+  ]
+
+  if (currentSection === 'main') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pb-24">
+        <div className="container mx-auto px-4 py-8">
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center mb-12"
           >
-            <Card className="p-8">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">
-                Select Target Muscle
+            <h1 className="text-5xl font-bold mb-4">
+              <span className="bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 bg-clip-text text-transparent">
+                Body Explorer
+              </span>
+            </h1>
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+              Your complete fitness toolkit for calculations, challenges, stretches, and workout planning
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+            {mainSections.map((section, index) => {
+              const Icon = section.icon
+              return (
+                <motion.div
+                  key={section.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 + index * 0.1 }}
+                >
+                  <GlareCard>
+                    <motion.div
+                      className="p-8 cursor-pointer h-full"
+                      onClick={() => setCurrentSection(section.id as Section)}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <div className={`w-16 h-16 bg-gradient-to-r ${section.gradient} rounded-2xl flex items-center justify-center mb-6`}>
+                        <Icon className="w-8 h-8 text-white" />
+                      </div>
+                      <h3 className="text-2xl font-bold mb-3">
+                        <span className={`bg-gradient-to-r ${section.gradient} bg-clip-text text-transparent`}>
+                          {section.title}
+                        </span>
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-400">
+                        {section.description}
+                      </p>
+                    </motion.div>
+                  </GlareCard>
+                </motion.div>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (currentSection === 'calculator') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pb-24">
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex items-center mb-8">
+            <Button
+              variant="ghost"
+              onClick={() => setCurrentSection('main')}
+              className="mr-4"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+            <h1 className="text-4xl font-bold">
+              <span className="bg-gradient-to-r from-emerald-500 to-teal-600 bg-clip-text text-transparent">
+                Fitness Calculators
+              </span>
+            </h1>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* BMI Calculator */}
+            <GlareCard>
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">BMI Calculator</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-gray-300">Height (cm)</label>
+                    <input
+                      type="number"
+                      value={bmi.height}
+                      onChange={(e) => setBmi(prev => ({ ...prev, height: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:bg-gray-700 dark:text-white"
+                      placeholder="Enter height"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-gray-300">Weight (kg)</label>
+                    <input
+                      type="number"
+                      value={bmi.weight}
+                      onChange={(e) => setBmi(prev => ({ ...prev, weight: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:bg-gray-700 dark:text-white"
+                      placeholder="Enter weight"
+                    />
+                  </div>
+                  <Button onClick={calculateBMI} className="w-full">Calculate BMI</Button>
+                  {bmi.result > 0 && (
+                    <div className="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
+                      <p className="text-2xl font-bold text-emerald-600">{bmi.result}</p>
+                      <p className={`text-sm ${getBMICategory(bmi.result).color}`}>
+                        {getBMICategory(bmi.result).category}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </GlareCard>
+
+            {/* 1RM Calculator */}
+            <GlareCard>
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">1 Rep Max Calculator</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-gray-300">Weight Lifted (kg)</label>
+                    <input
+                      type="number"
+                      value={oneRepMax.weight}
+                      onChange={(e) => setOneRepMax(prev => ({ ...prev, weight: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:bg-gray-700 dark:text-white"
+                      placeholder="Enter weight"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-gray-300">Reps Performed</label>
+                    <input
+                      type="number"
+                      value={oneRepMax.reps}
+                      onChange={(e) => setOneRepMax(prev => ({ ...prev, reps: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:bg-gray-700 dark:text-white"
+                      placeholder="Enter reps"
+                    />
+                  </div>
+                  <Button onClick={calculateOneRepMax} className="w-full">Calculate 1RM</Button>
+                  {oneRepMax.result > 0 && (
+                    <div className="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
+                      <p className="text-2xl font-bold text-emerald-600">{oneRepMax.result} kg</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Estimated 1 Rep Max</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </GlareCard>
+
+            {/* BMR Calculator */}
+            <GlareCard>
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">BMR Calculator</h3>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-1 text-gray-300">Age</label>
+                      <input
+                        type="number"
+                        value={bmr.age}
+                        onChange={(e) => setBmr(prev => ({ ...prev, age: e.target.value }))}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:bg-gray-700 dark:text-white"
+                        placeholder="Enter Age"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1 text-gray-300">Gender</label>
+                      <select
+                        value={bmr.gender}
+                        onChange={(e) => setBmr(prev => ({ ...prev, gender: e.target.value }))}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:bg-gray-700 dark:text-white"
+                        
+                      >
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-1 text-gray-300">Weight (kg)</label>
+                      <input
+                        type="number"
+                        value={bmr.weight}
+                        onChange={(e) => setBmr(prev => ({ ...prev, weight: e.target.value }))}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:bg-gray-700 dark:text-white"
+                        placeholder="Enter weight"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1 text-gray-300">Height (cm)</label>
+                      <input
+                        type="number"
+                        value={bmr.height}
+                        onChange={(e) => setBmr(prev => ({ ...prev, height: e.target.value }))}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:bg-gray-700 dark:text-white"
+                        placeholder="Enter height"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-gray-300">Activity Level</label>
+                    <select
+                      value={bmr.activity}
+                      onChange={(e) => setBmr(prev => ({ ...prev, activity: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:bg-gray-700 dark:text-white"
+                    >
+                      <option value="1.2">Sedentary</option>
+                      <option value="1.375">Light Activity</option>
+                      <option value="1.55">Moderate Activity</option>
+                      <option value="1.725">Very Active</option>
+                      <option value="1.9">Extremely Active</option>
+                    </select>
+                  </div>
+                  <Button onClick={calculateBMR} className="w-full">Calculate BMR</Button>
+                  {bmr.result > 0 && (
+                    <div className="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
+                      <p className="text-2xl font-bold text-emerald-600">{bmr.result}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Calories per day</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </GlareCard>
+
+            {/* Calorie Calculator */}
+            <GlareCard>
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Calorie Calculator</h3>
+                {bmr.result > 0 ? (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
+                        <p className="font-semibold text-green-800 dark:text-green-300">Maintenance</p>
+                        <p className="text-2xl font-bold text-green-600">{bmr.result}</p>
+                        <p className="text-sm text-green-600">calories/day</p>
+                      </div>
+                      <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-xl">
+                        <p className="font-semibold text-red-800 dark:text-red-300">Cutting (Deficit)</p>
+                        <p className="text-2xl font-bold text-red-600">{bmr.result - 500}</p>
+                        <p className="text-sm text-red-600">calories/day</p>
+                      </div>
+                      <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+                        <p className="font-semibold text-blue-800 dark:text-blue-300">Bulking (Surplus)</p>
+                        <p className="text-2xl font-bold text-blue-600">{bmr.result + 500}</p>
+                        <p className="text-sm text-blue-600">calories/day</p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-gray-600 dark:text-gray-400 text-center py-8">
+                    Calculate your BMR first to see calorie recommendations
+                  </p>
+                )}
+              </div>
+            </GlareCard>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (currentSection === 'funzone') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pb-24">
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex items-center mb-8">
+            <Button
+              variant="ghost"
+              onClick={() => setCurrentSection('main')}
+              className="mr-4"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+            <h1 className="text-4xl font-bold">
+              <span className="bg-gradient-to-r from-teal-500 to-cyan-600 bg-clip-text text-transparent">
+                Fun Zone
+              </span>
+            </h1>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {challenges.map((challenge, index) => (
+              <motion.div
+                key={challenge.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <GlareCard>
+                  <div className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        challenge.difficulty === 'Beginner' ? 'bg-green-100 text-green-600' :
+                        challenge.difficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-600' :
+                        'bg-red-100 text-red-600'
+                      }`}>
+                        {challenge.difficulty}
+                      </span>
+                      <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full text-sm">
+                        {challenge.duration}
+                      </span>
+                    </div>
+                    
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                      {challenge.title}
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400 mb-6">
+                      {challenge.description}
+                    </p>
+                    
+                    <Button className="w-full">
+                      {challenge.completed ? 'View Progress' : 'Start Challenge'}
+                    </Button>
+                  </div>
+                </GlareCard>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (currentSection === 'stretch') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pb-24">
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex items-center mb-8">
+            <Button
+              variant="ghost"
+              onClick={() => setCurrentSection('main')}
+              className="mr-4"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+            <h1 className="text-4xl font-bold">
+              <span className="bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">
+                Stretch Library
+              </span>
+            </h1>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Muscle Selection */}
+            <Card className="p-6">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Select Muscle Group</h2>
+              <div className="grid grid-cols-2 gap-3">
+                {Object.keys(muscleStretches).map((muscle) => (
+                  <motion.button
+                    key={muscle}
+                    onClick={() => setSelectedMuscle(muscle)}
+                    className={`p-3 rounded-xl border text-left transition-all ${
+                      selectedMuscle === muscle
+                        ? 'border-cyan-500 bg-cyan-50 dark:bg-cyan-900/20 text-cyan-600'
+                        : 'border-gray-300 dark:border-gray-600 hover:border-cyan-300'
+                    }`}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Target className="w-4 h-4 mb-1" />
+                    <span className="text-sm font-medium">{muscle}</span>
+                  </motion.button>
+                ))}
+              </div>
+            </Card>
+
+            {/* Stretch Details */}
+            <div className="space-y-6">
+              <Card className="p-6">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                  {selectedMuscle} Stretches
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400">
+                  {muscleStretches[selectedMuscle as keyof typeof muscleStretches]?.length || 0} stretches available
+                </p>
+              </Card>
+
+              {muscleStretches[selectedMuscle as keyof typeof muscleStretches]?.map((stretch, index) => (
+                <motion.div
+                  key={stretch.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <GlareCard>
+                    <div className="p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                          stretch.difficulty === 'Beginner' ? 'bg-green-100 text-green-600' :
+                          'bg-yellow-100 text-yellow-600'
+                        }`}>
+                          {stretch.difficulty}
+                        </span>
+                        <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full text-sm">
+                          {stretch.duration}
+                        </span>
+                      </div>
+                      
+                      <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+                        {stretch.name}
+                      </h3>
+                      
+                      <div className="mb-4">
+                        <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Instructions:</h4>
+                        <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                          {stretch.instructions.map((instruction, idx) => (
+                            <li key={idx}>• {instruction}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </GlareCard>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (currentSection === 'split') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pb-24">
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex items-center mb-8">
+            <Button
+              variant="ghost"
+              onClick={() => setCurrentSection('main')}
+              className="mr-4"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+            <h1 className="text-4xl font-bold">
+              <span className="bg-gradient-to-r from-blue-500 to-emerald-600 bg-clip-text text-transparent">
+                Split Generator
+              </span>
+            </h1>
+          </div>
+
+          <div className="max-w-4xl mx-auto">
+            <Card className="p-8 mb-8">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                Configure Your Workout Split
               </h2>
               
-              {/* Interactive Body */}
-              <div className="relative max-w-md mx-auto">
-                {/* Body SVG Placeholder - would be replaced with actual interactive body */}
-                <div className="aspect-[3/4] bg-gradient-to-b from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 rounded-3xl relative overflow-hidden">
-                  {/* Muscle Group Buttons */}
-                  <div className="absolute inset-4 grid grid-cols-2 gap-2">
-                    {muscleGroups.map((muscle, index) => (
-                      <motion.button
-                        key={muscle.name}
-                        onClick={() => handleMuscleClick(muscle.name)}
-                        className={`p-4 rounded-2xl border-2 transition-all text-sm font-medium ${
-                          selectedMuscle === muscle.name
-                            ? 'border-emerald-500 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400'
-                            : 'border-gray-300 dark:border-gray-600 bg-white/50 dark:bg-gray-800/50 hover:border-emerald-300'
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                {/* Experience Level */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                    <Target className="w-4 h-4 inline mr-1" />
+                    Experience Level
+                  </label>
+                  <div className="space-y-2">
+                    {['Beginner', 'Intermediate', 'Advanced'].map((level) => (
+                      <button
+                        key={level}
+                        onClick={() => setSplitConfig(prev => ({ ...prev, experience: level }))}
+                        className={`w-full p-3 rounded-xl border text-left transition-all ${
+                          splitConfig.experience === level
+                            ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
+                            : 'border-gray-300 dark:border-gray-600 hover:border-emerald-300'
                         }`}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.2 + index * 0.1 }}
                       >
-                        <Target className="w-5 h-5 mx-auto mb-1" />
-                        {muscle.name}
-                      </motion.button>
+                        {level}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Days Per Week */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                    <Clock className="w-4 h-4 inline mr-1" />
+                    Days Per Week
+                  </label>
+                  <div className="space-y-2">
+                    {['3', '4', '5', '6'].map((days) => (
+                      <button
+                        key={days}
+                        onClick={() => setSplitConfig(prev => ({ ...prev, days }))}
+                        className={`w-full p-3 rounded-xl border text-left transition-all ${
+                          splitConfig.days === days
+                            ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
+                            : 'border-gray-300 dark:border-gray-600 hover:border-emerald-300'
+                        }`}
+                      >
+                        {days} Days
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Location */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                    <MapPin className="w-4 h-4 inline mr-1" />
+                    Location
+                  </label>
+                  <div className="space-y-2">
+                    {['Gym', 'Home', 'Hybrid'].map((location) => (
+                      <button
+                        key={location}
+                        onClick={() => setSplitConfig(prev => ({ ...prev, location }))}
+                        className={`w-full p-3 rounded-xl border text-left transition-all ${
+                          splitConfig.location === location
+                            ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
+                            : 'border-gray-300 dark:border-gray-600 hover:border-emerald-300'
+                        }`}
+                      >
+                        {location}
+                      </button>
                     ))}
                   </div>
                 </div>
               </div>
-            </Card>
-          </motion.div>
 
-          {/* Exercise Details */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            {selectedMuscle ? (
-              <div className="space-y-6">
-                <Card className="p-6">
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                    {selectedMuscle} Exercises
-                  </h2>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    {selectedExercises.length} exercises found for {selectedMuscle.toLowerCase()}
-                  </p>
-                </Card>
-
-                {selectedExercises.map((exercise, index) => (
-                  <motion.div
-                    key={exercise.name}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 + index * 0.1 }}
-                  >
-                    <GlareCard>
-                      <div className="p-6">
-                        <div className="flex items-center justify-between mb-4">
-                          <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full text-sm font-medium">
-                            {exercise.difficulty}
-                          </span>
-                          <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full text-sm">
-                            {exercise.equipment}
-                          </span>
-                        </div>
-                        
-                        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-                          {exercise.name}
-                        </h3>
-                        
-                        <div className="mb-6">
-                          <h4 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center">
-                            <Info className="w-4 h-4 mr-1" />
-                            Instructions:
-                          </h4>
-                          <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                            {exercise.instructions.map((instruction, idx) => (
-                              <li key={idx}>• {instruction}</li>
-                            ))}
-                          </ul>
-                        </div>
-
-                        <Button className="w-full">
-                          <Play className="w-4 h-4 mr-2" />
-                          Watch Tutorial
-                        </Button>
-                      </div>
-                    </GlareCard>
-                  </motion.div>
-                ))}
+              {/* Cardio Toggle */}
+              <div className="mb-6">
+                <label className="flex items-center space-x-3 cursor-pointer">
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      checked={splitConfig.cardio}
+                      onChange={(e) => setSplitConfig(prev => ({ ...prev, cardio: e.target.checked }))}
+                      className="sr-only"
+                    />
+                    <div className={`w-12 h-6 rounded-full transition-colors ${
+                      splitConfig.cardio ? 'bg-emerald-500' : 'bg-gray-300 dark:bg-gray-600'
+                    }`}>
+                      <div className={`w-5 h-5 bg-white rounded-full shadow-md transform transition-transform ${
+                        splitConfig.cardio ? 'translate-x-6' : 'translate-x-0.5'
+                      } mt-0.5`} />
+                    </div>
+                  </div>
+                  <span className="text-gray-700 dark:text-gray-300 flex items-center">
+                    <Zap className="w-4 h-4 mr-1" />
+                    Include Cardio Days
+                  </span>
+                </label>
               </div>
-            ) : (
-              <Card className="p-8 text-center">
-                <Target className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                  Select a Muscle Group
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Click on any muscle group to see targeted exercises and tutorials
-                </p>
-              </Card>
+
+              {/* User Goal Display */}
+              {userProfile?.goal && (
+                <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+                  <p className="text-sm text-blue-600 dark:text-blue-400">
+                    <strong>Your Goal:</strong> {userProfile.goal}
+                  </p>
+                </div>
+              )}
+
+              <Button
+                onClick={generateWorkoutSplit}
+                disabled={!splitConfig.experience || !splitConfig.days || !splitConfig.location}
+                className="w-full"
+              >
+                <Dumbbell className="w-5 h-5 mr-2" />
+                Generate Weekly Split
+              </Button>
+            </Card>
+
+            {/* Generated Split */}
+            {generatedSplit && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                <Card className="p-8">
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                      Your Weekly Split
+                    </h2>
+                    <Button onClick={downloadSplitPDF} variant="secondary">
+                      <Download className="w-4 h-4 mr-2" />
+                      Download PDF
+                    </Button>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {Object.entries(generatedSplit.split).map(([day, workout]) => (
+                      <div
+                        key={day}
+                        className={`p-4 rounded-xl border-l-4 ${
+                          workout === 'Rest' || workout === 'Cardio/Active Recovery'
+                            ? 'border-gray-400 bg-gray-50 dark:bg-gray-800'
+                            : 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
+                        }`}
+                      >
+                        <h3 className="font-bold text-gray-900 dark:text-white">{day}</h3>
+                        <p className="text-gray-600 dark:text-gray-400">{workout}</p>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              </motion.div>
             )}
-          </motion.div>
+          </div>
         </div>
       </div>
-    </div>
-  )
+    )
+  }
+
+  return null
 }
