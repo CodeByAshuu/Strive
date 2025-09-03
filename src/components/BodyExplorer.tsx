@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Calculator, Gamepad2, StretchVertical as Stretch, Dumbbell, ArrowLeft, Download, Target, Clock, MapPin, Zap } from 'lucide-react'
+import { Calculator, Gamepad2, Blocks as Stretch, Dumbbell, ArrowLeft, Download, Target, Clock, MapPin, Zap } from 'lucide-react'
 import { Card, GlareCard } from './ui/Card'
 import { Button } from './ui/Button'
 import { useAuth } from './../contexts/AuthContext'
 import { supabase } from './../lib/supabase'
 import jsPDF from 'jspdf'
+import cutTextBg from '../assets/cut-text-bg-3.jpeg'
 
 type Section = 'main' | 'calculator' | 'funzone' | 'stretch' | 'split'
 
@@ -32,6 +33,13 @@ interface Stretch {
   duration: string
   instructions: string[]
   difficulty: string
+}
+
+interface GeneratedSplit {
+  split: Record<string, string>
+  goal: string
+  experience: string
+  location: string
 }
 
 const challenges: Challenge[] = [
@@ -108,7 +116,7 @@ export const BodyExplorer: React.FC = () => {
     location: '',
     cardio: false
   })
-  const [generatedSplit, setGeneratedSplit] = useState<any>(null)
+  const [generatedSplit, setGeneratedSplit] = useState<GeneratedSplit | null>(null)
 
   useEffect(() => {
     if (user) {
@@ -190,7 +198,7 @@ export const BodyExplorer: React.FC = () => {
     const { experience, days, location, cardio } = splitConfig
     const goal = userProfile?.goal || 'General Fitness'
 
-    let split: any = {}
+    let split: Record<string, string> = {}
 
     if (days === '3') {
       split = {
@@ -275,9 +283,9 @@ export const BodyExplorer: React.FC = () => {
 
     Object.entries(generatedSplit.split).forEach(([day, workout]) => {
       doc.setFontSize(12)
-      doc.setFont(undefined, 'bold')
+      doc.setFont('helvetica', 'bold')
       doc.text(`${day}:`, 20, y)
-      doc.setFont(undefined, 'normal')
+      doc.setFont('helvetica', 'normal')
       doc.text(`${workout}`, 60, y)
       y += 8
     })
@@ -318,17 +326,15 @@ export const BodyExplorer: React.FC = () => {
 
   if (currentSection === 'main') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pt-16">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pt-24">
         <div className="container mx-auto px-4 py-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-center mb-12"
           >
-            <h1 className="text-5xl font-bold mb-4">
-              <span className="bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 bg-clip-text text-transparent">
-                Body Explorer
-              </span>
+            <h1 className="text-5xl font-bold mb-4 text-white">
+              Fitness Toolkit
             </h1>
             {/* <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
               Your complete fitness toolkit for calculations, challenges, stretches, and workout planning
@@ -347,22 +353,30 @@ export const BodyExplorer: React.FC = () => {
                 >
                   <GlareCard>
                     <motion.div
-                      className="p-8 cursor-pointer h-full"
+                      className="p-8 cursor-pointer h-full bg-gray-900 flex flex-col justify-center items-center relative overflow-hidden"
                       onClick={() => setCurrentSection(section.id as Section)}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      <div className={`w-16 h-16 bg-gradient-to-r ${section.gradient} rounded-2xl flex items-center justify-center mb-6`}>
-                        <Icon className="w-8 h-8 text-white" />
-                      </div>
-                      <h3 className="text-2xl font-bold mb-3">
-                        <span className={`bg-gradient-to-r ${section.gradient} bg-clip-text text-transparent`}>
+                      <h3 className="text-6xl font-bold mb-3 relative z-10">
+                        <span
+                          className="bg-clip-text text-transparent"
+                          style={{
+                            backgroundImage: `url(${cutTextBg})`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center'
+                          }}
+                        >
                           {section.title}
                         </span>
                       </h3>
-                      <p className="text-gray-600 dark:text-gray-400">
+                      <p className="text-gray-600 dark:text-gray-400 relative z-10">
                         {section.description}
                       </p>
+                      <Icon
+                        className="absolute bottom-3 right-3 w-40 h-40 lg:w-56 lg:h-56 opacity-10 rotate-12 text-emerald-400 pointer-events-none"
+                        aria-hidden="true"
+                      />
                     </motion.div>
                   </GlareCard>
                 </motion.div>
@@ -674,10 +688,10 @@ export const BodyExplorer: React.FC = () => {
                   <motion.button
                     key={muscle}
                     onClick={() => setSelectedMuscle(muscle)}
-                    className={`p-3 rounded-xl border text-left transition-all ${
+                    className={`p-3 rounded-xl border text-left transition-all  ${
                       selectedMuscle === muscle
-                        ? 'border-cyan-500 bg-cyan-50 dark:bg-cyan-900/20 text-cyan-600'
-                        : 'border-gray-300 dark:border-gray-600 hover:border-cyan-300'
+                        ? 'border-cyan-500 bg-cyan-50 dark:bg-cyan-900/20 text-cyan-300'
+                        : 'border-gray-300 dark:border-gray-600 hover:border-cyan-300 text-gray-300'
                     }`}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
