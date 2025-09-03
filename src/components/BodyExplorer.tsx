@@ -70,6 +70,54 @@ const challenges: Challenge[] = [
 ]
 
 const muscleStretches = {
+  'Neck': [
+    { name: 'Doorway Chest Stretch', duration: '30-60s', instructions: ['Place forearm on doorframe', 'Step forward gently', 'Feel stretch across chest'], difficulty: 'Beginner' },
+    { name: 'Wall Angels', duration: '60s', instructions: ['Stand against wall', 'Move arms up and down', 'Keep contact with wall'], difficulty: 'Beginner' }
+  ],
+  'Shoulders': [
+    { name: 'Cross-Body Stretch', duration: '30s each arm', instructions: ['Pull arm across chest', 'Use other arm to assist', 'Feel stretch in shoulder'], difficulty: 'Beginner' },
+    { name: 'Overhead Tricep Stretch', duration: '30s each arm', instructions: ['Reach arm overhead', 'Bend elbow behind head', 'Pull with other hand'], difficulty: 'Beginner' }
+  ],
+  'Shoulder Blade': [
+    { name: 'Cross-Body Stretch', duration: '30s each arm', instructions: ['Pull arm across chest', 'Use other arm to assist', 'Feel stretch in shoulder'], difficulty: 'Beginner' },
+    { name: 'Overhead Tricep Stretch', duration: '30s each arm', instructions: ['Reach arm overhead', 'Bend elbow behind head', 'Pull with other hand'], difficulty: 'Beginner' }
+  ],
+  'Chest': [
+    { name: 'Doorway Chest Stretch', duration: '30-60s', instructions: ['Place forearm on doorframe', 'Step forward gently', 'Feel stretch across chest'], difficulty: 'Beginner' },
+    { name: 'Wall Angels', duration: '60s', instructions: ['Stand against wall', 'Move arms up and down', 'Keep contact with wall'], difficulty: 'Beginner' }
+  ],
+  'Elbow': [
+    { name: 'Doorway Chest Stretch', duration: '30-60s', instructions: ['Place forearm on doorframe', 'Step forward gently', 'Feel stretch across chest'], difficulty: 'Beginner' },
+    { name: 'Wall Angels', duration: '60s', instructions: ['Stand against wall', 'Move arms up and down', 'Keep contact with wall'], difficulty: 'Beginner' }
+  ],
+  'Wrist': [
+    { name: 'Doorway Chest Stretch', duration: '30-60s', instructions: ['Place forearm on doorframe', 'Step forward gently', 'Feel stretch across chest'], difficulty: 'Beginner' },
+    { name: 'Wall Angels', duration: '60s', instructions: ['Stand against wall', 'Move arms up and down', 'Keep contact with wall'], difficulty: 'Beginner' }
+  ],
+  'Core': [
+    { name: 'Doorway Chest Stretch', duration: '30-60s', instructions: ['Place forearm on doorframe', 'Step forward gently', 'Feel stretch across chest'], difficulty: 'Beginner' },
+    { name: 'Wall Angels', duration: '60s', instructions: ['Stand against wall', 'Move arms up and down', 'Keep contact with wall'], difficulty: 'Beginner' }
+  ],
+  'Back': [
+    { name: 'Cat-Cow Stretch', duration: '60s', instructions: ['Start on hands and knees', 'Arch and round your back', 'Move slowly and controlled'], difficulty: 'Beginner' },
+    { name: 'Child\'s Pose', duration: '60-120s', instructions: ['Kneel on floor', 'Sit back on heels', 'Reach arms forward'], difficulty: 'Beginner' }
+  ],
+  'Lower Back': [
+    { name: 'Doorway Chest Stretch', duration: '30-60s', instructions: ['Place forearm on doorframe', 'Step forward gently', 'Feel stretch across chest'], difficulty: 'Beginner' },
+    { name: 'Wall Angels', duration: '60s', instructions: ['Stand against wall', 'Move arms up and down', 'Keep contact with wall'], difficulty: 'Beginner' }
+  ],
+  'Spine': [
+    { name: 'Doorway Chest Stretch', duration: '30-60s', instructions: ['Place forearm on doorframe', 'Step forward gently', 'Feel stretch across chest'], difficulty: 'Beginner' },
+    { name: 'Wall Angels', duration: '60s', instructions: ['Stand against wall', 'Move arms up and down', 'Keep contact with wall'], difficulty: 'Beginner' }
+  ],
+  'Posture': [
+    { name: 'Doorway Chest Stretch', duration: '30-60s', instructions: ['Place forearm on doorframe', 'Step forward gently', 'Feel stretch across chest'], difficulty: 'Beginner' },
+    { name: 'Wall Angels', duration: '60s', instructions: ['Stand against wall', 'Move arms up and down', 'Keep contact with wall'], difficulty: 'Beginner' }
+  ],
+  'Hip': [
+    { name: 'Doorway Chest Stretch', duration: '30-60s', instructions: ['Place forearm on doorframe', 'Step forward gently', 'Feel stretch across chest'], difficulty: 'Beginner' },
+    { name: 'Wall Angels', duration: '60s', instructions: ['Stand against wall', 'Move arms up and down', 'Keep contact with wall'], difficulty: 'Beginner' }
+  ],
   'Hamstrings': [
     { name: 'Standing Forward Fold', duration: '30-60s', instructions: ['Stand with feet hip-width apart', 'Slowly fold forward', 'Let arms hang naturally'], difficulty: 'Beginner' },
     { name: 'Seated Hamstring Stretch', duration: '30s each leg', instructions: ['Sit with one leg extended', 'Reach toward your toes', 'Keep back straight'], difficulty: 'Beginner' }
@@ -78,22 +126,16 @@ const muscleStretches = {
     { name: 'Standing Quad Stretch', duration: '30s each leg', instructions: ['Stand on one leg', 'Pull heel to glute', 'Keep knees together'], difficulty: 'Beginner' },
     { name: 'Couch Stretch', duration: '60-90s each leg', instructions: ['Place back foot on couch', 'Lunge forward', 'Feel stretch in hip flexors'], difficulty: 'Intermediate' }
   ],
-  'Back': [
-    { name: 'Cat-Cow Stretch', duration: '60s', instructions: ['Start on hands and knees', 'Arch and round your back', 'Move slowly and controlled'], difficulty: 'Beginner' },
-    { name: 'Child\'s Pose', duration: '60-120s', instructions: ['Kneel on floor', 'Sit back on heels', 'Reach arms forward'], difficulty: 'Beginner' }
-  ],
-  'Shoulders': [
-    { name: 'Cross-Body Stretch', duration: '30s each arm', instructions: ['Pull arm across chest', 'Use other arm to assist', 'Feel stretch in shoulder'], difficulty: 'Beginner' },
-    { name: 'Overhead Tricep Stretch', duration: '30s each arm', instructions: ['Reach arm overhead', 'Bend elbow behind head', 'Pull with other hand'], difficulty: 'Beginner' }
-  ],
-  'Chest': [
-    { name: 'Doorway Chest Stretch', duration: '30-60s', instructions: ['Place forearm on doorframe', 'Step forward gently', 'Feel stretch across chest'], difficulty: 'Beginner' },
-    { name: 'Wall Angels', duration: '60s', instructions: ['Stand against wall', 'Move arms up and down', 'Keep contact with wall'], difficulty: 'Beginner' }
-  ],
   'Calves': [
     { name: 'Wall Calf Stretch', duration: '30s each leg', instructions: ['Place hands on wall', 'Step back with one leg', 'Keep heel down'], difficulty: 'Beginner' },
     { name: 'Seated Calf Stretch', duration: '30s each leg', instructions: ['Sit with leg extended', 'Pull toes toward shin', 'Feel stretch in calf'], difficulty: 'Beginner' }
-  ]
+  ],
+  'Ankle': [
+    { name: 'Doorway Chest Stretch', duration: '30-60s', instructions: ['Place forearm on doorframe', 'Step forward gently', 'Feel stretch across chest'], difficulty: 'Beginner' },
+    { name: 'Wall Angels', duration: '60s', instructions: ['Stand against wall', 'Move arms up and down', 'Keep contact with wall'], difficulty: 'Beginner' }
+  ],
+  
+
 }
 
 export const BodyExplorer: React.FC = () => {
