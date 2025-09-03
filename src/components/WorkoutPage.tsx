@@ -176,7 +176,7 @@ export const WorkoutPage: React.FC = () => {
                     <button
                       key={option}
                       onClick={() => setExperience(option)}
-                      className={`w-full p-3 rounded-xl border text-left transition-all text-gray-200 ${
+                      className={`w-full p-3 rounded-xl border text-left transition-all text-gray-200 py-8 ${
                         experience === option
                           ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
                           : 'border-gray-300 dark:border-gray-600 hover:border-emerald-300'
@@ -199,7 +199,7 @@ export const WorkoutPage: React.FC = () => {
                     <button
                       key={option}
                       onClick={() => setLocation(option)}
-                      className={`w-full p-3 rounded-xl border text-left transition-all text-gray-200 ${
+                      className={`w-full p-3 rounded-xl border text-left transition-all text-gray-200 py-8 ${
                         location === option
                           ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
                           : 'border-gray-300 dark:border-gray-600 hover:border-emerald-300'
