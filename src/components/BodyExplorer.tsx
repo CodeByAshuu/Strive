@@ -382,7 +382,7 @@ export const BodyExplorer: React.FC = () => {
             <Button
               variant="ghost"
               onClick={() => setCurrentSection('main')}
-              className="mr-4"
+              className="mr-4  flex justify-center items-center"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back
@@ -590,7 +590,7 @@ export const BodyExplorer: React.FC = () => {
             <Button
               variant="ghost"
               onClick={() => setCurrentSection('main')}
-              className="mr-4"
+              className="mr-4 flex justify-center items-center"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back
@@ -653,7 +653,7 @@ export const BodyExplorer: React.FC = () => {
             <Button
               variant="ghost"
               onClick={() => setCurrentSection('main')}
-              className="mr-4"
+              className="mr-4 flex justify-center items-center"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back
@@ -752,7 +752,7 @@ export const BodyExplorer: React.FC = () => {
             <Button
               variant="ghost"
               onClick={() => setCurrentSection('main')}
-              className="mr-4"
+              className="mr-4 flex justify-center items-center"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back
