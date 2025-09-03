@@ -32,9 +32,10 @@ interface Challenge {
 interface Stretch {
   name: string
   duration: string
-  instructions: string[]
-  difficulty: string
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced'
+  image?: string
 }
+
 
 interface GeneratedSplit {
   split: Record<string, string>
