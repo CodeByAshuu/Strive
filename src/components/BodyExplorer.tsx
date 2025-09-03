@@ -6,6 +6,7 @@ import { Button } from './ui/Button'
 import { useAuth } from './../contexts/AuthContext'
 import { supabase } from './../lib/supabase'
 import jsPDF from 'jspdf'
+import GlareHover from './ui/GlareHover'
 import cutTextBg from '../assets/cut-text-bg-3.jpeg'
 
 type Section = 'main' | 'calculator' | 'funzone' | 'stretch' | 'split'
@@ -368,8 +369,8 @@ export const BodyExplorer: React.FC = () => {
 
   if (currentSection === 'main') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pt-24">
-        <div className="container mx-auto px-4 py-8">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pt-20">
+        <div className="container mx-auto px-4 pb-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -393,9 +394,18 @@ export const BodyExplorer: React.FC = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 + index * 0.1 }}
                 >
-                  <GlareCard>
+                  {/* <GlareCard> */}
+                  <GlareHover
+              key={section.title}
+              glareColor="#ffffff"
+              glareOpacity={0.3}
+              glareAngle={-30}
+              glareSize={300}
+              transitionDuration={800}
+              className="h-full"
+            >
                     <motion.div
-                      className="p-8 cursor-pointer h-full bg-gray-900 flex flex-col justify-center items-center relative overflow-hidden"
+                      className="p-8 cursor-pointer h-full flex flex-col justify-center items-center relative overflow-hidden"
                       onClick={() => setCurrentSection(section.id as Section)}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
@@ -420,7 +430,8 @@ export const BodyExplorer: React.FC = () => {
                         aria-hidden="true"
                       />
                     </motion.div>
-                  </GlareCard>
+                  {/* </GlareCard> */}
+                  </GlareHover>
                 </motion.div>
               )
             })}
