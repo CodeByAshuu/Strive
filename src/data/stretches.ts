@@ -1,44 +1,327 @@
-// src/data/muscleStretches.ts
-export type Difficulty = 'Beginner' | 'Intermediate' | 'Advanced'
-
-export interface StretchItem {
-  name: string
-  duration: string
-  difficulty: Difficulty
-  image?: string // path under public/, e.g. "/assets/stretches/standing-forward-fold.jpg"
+// src/data/stretches.ts
+export interface Stretch {
+  name: string;
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+  image?: string; // URL placeholder for images
+  primaryMuscles: string[];
+  secondaryMuscles?: string[];
 }
 
-const muscleStretches: Record<string, StretchItem[]> = {
-  Neck: [
-    { name: 'Neck Tilt', duration: '20-30s', difficulty: 'Beginner', image: '/assets/stretches/neck-tilt.jpg' },
-    { name: 'Neck Rotation', duration: '20-30s', difficulty: 'Beginner', image: '/assets/stretches/neck-rotation.jpg' }
+export interface MuscleStretches {
+  [muscle: string]: Stretch[];
+}
+
+export const muscleStretches: MuscleStretches = {
+  'Neck': [
+    { 
+      name: 'Cervical Side Crunch', 
+      difficulty: 'Beginner', 
+      image: '/images/stretches/neck/cervical-side-crunch.jpg',
+      primaryMuscles: ['Neck', 'Upper Trapezius'],
+      secondaryMuscles: ['Shoulders']
+    },
+    { 
+      name: 'Chin Tucks', 
+      difficulty: 'Beginner', 
+      image: '/images/stretches/neck/chin-tucks.jpg',
+      primaryMuscles: ['Neck', 'Deep Cervical Flexors'],
+      secondaryMuscles: ['Upper Back']
+    },
+    { 
+      name: 'Levator Scapulae Stretch', 
+      difficulty: 'Intermediate', 
+      image: '/images/stretches/neck/levator-scapulae.jpg',
+      primaryMuscles: ['Neck', 'Levator Scapulae'],
+      secondaryMuscles: ['Shoulders']
+    },
+    { 
+      name: 'Upper Trapezius PNF Stretch', 
+      difficulty: 'Advanced', 
+      image: '/images/stretches/neck/upper-trapezius-pnf.jpg',
+      primaryMuscles: ['Neck', 'Upper Trapezius'],
+      secondaryMuscles: ['Shoulders']
+    }
   ],
-//   Shoulders: [
-//     { name: 'Cross-Body Stretch', duration: '30s each arm', difficulty: 'Beginner', image: '/assets/stretches/cross-body.jpg' },
-//     { name: 'Overhead Tricep Stretch', duration: '30s each arm', difficulty: 'Beginner', image: '/assets/stretches/overhead-tricep.jpg' }
-//   ],
-//   'Shoulder Blade': [
-//     { name: 'Scapular Retraction', duration: '30-45s', difficulty: 'Beginner', image: '/assets/stretches/scapular-retraction.jpg' }
-//   ],
-//   Chest: [
-//     { name: 'Doorway Chest Stretch', duration: '30-60s', difficulty: 'Beginner', image: '/assets/stretches/doorway-chest.jpg' }
-//   ],
-//   Back: [
-//     { name: "Child's Pose", duration: '60-120s', difficulty: 'Beginner', image: '/assets/stretches/child-pose.jpg' },
-//     { name: 'Cat-Cow', duration: '60s', difficulty: 'Beginner', image: '/assets/stretches/cat-cow.jpg' }
-//   ],
-//   Hamstrings: [
-//     { name: 'Standing Forward Fold', duration: '30-60s', difficulty: 'Beginner', image: '/assets/stretches/standing-forward-fold.jpg' },
-//     { name: 'Seated Hamstring Stretch', duration: '30s each leg', difficulty: 'Beginner', image: '/assets/stretches/seated-hamstring.jpg' }
-//   ],
-//   Quadriceps: [
-//     { name: 'Standing Quad Stretch', duration: '30s each leg', difficulty: 'Beginner', image: '/assets/stretches/standing-quad.jpg' },
-//     { name: 'Couch Stretch', duration: '60-90s each leg', difficulty: 'Intermediate', image: '/assets/stretches/couch-stretch.jpg' }
-//   ],
-//   Calves: [
-//     { name: 'Wall Calf Stretch', duration: '30s each leg', difficulty: 'Beginner', image: '/assets/stretches/wall-calf.jpg' },
-//   ],
-  // ... add remaining muscles the same way
-}
-
-export default muscleStretches
+  'Shoulders': [
+    { 
+      name: 'Banded Reverse Fly', 
+      difficulty: 'Intermediate', 
+      image: '/images/stretches/shoulders/banded-reverse-fly.jpg',
+      primaryMuscles: ['Shoulders', 'Rear Deltoids'],
+      secondaryMuscles: ['Upper Back']
+    },
+    { 
+      name: 'Doorway Lean Back', 
+      difficulty: 'Beginner', 
+      image: '/images/stretches/shoulders/doorway-lean-back.jpg',
+      primaryMuscles: ['Shoulders', 'Chest'],
+      secondaryMuscles: ['Upper Back']
+    },
+    { 
+      name: 'Cable Face Pull', 
+      difficulty: 'Intermediate', 
+      image: '/images/stretches/shoulders/cable-face-pull.jpg',
+      primaryMuscles: ['Shoulders', 'Rear Deltoids'],
+      secondaryMuscles: ['Upper Back', 'Rhomboids']
+    },
+    { 
+      name: 'Quadruped Scapular Circles', 
+      difficulty: 'Beginner', 
+      image: '/images/stretches/shoulders/scapular-circles.jpg',
+      primaryMuscles: ['Shoulders', 'Scapula'],
+      secondaryMuscles: ['Upper Back']
+    }
+  ],
+  'Shoulder Blade': [
+    { 
+      name: 'Doorway Shoulder Internal Rotation', 
+      difficulty: 'Beginner', 
+      image: '/images/stretches/shoulder-blade/doorway-internal-rotation.jpg',
+      primaryMuscles: ['Shoulder Blade', 'Rotator Cuff'],
+      secondaryMuscles: ['Shoulders']
+    },
+    { 
+      name: 'Table Assisted Shoulder Extension', 
+      difficulty: 'Beginner', 
+      image: '/images/stretches/shoulder-blade/table-shoulder-extension.jpg',
+      primaryMuscles: ['Shoulder Blade', 'Latissimus Dorsi'],
+      secondaryMuscles: ['Back']
+    },
+    { 
+      name: 'Prone W-Stretch', 
+      difficulty: 'Intermediate', 
+      image: '/images/stretches/shoulder-blade/prone-w-stretch.jpg',
+      primaryMuscles: ['Shoulder Blade', 'Rhomboids'],
+      secondaryMuscles: ['Upper Back']
+    },
+    { 
+      name: 'Wall Crawl', 
+      difficulty: 'Intermediate', 
+      image: '/images/stretches/shoulder-blade/wall-crawl.jpg',
+      primaryMuscles: ['Shoulder Blade', 'Scapular Stabilizers'],
+      secondaryMuscles: ['Shoulders', 'Upper Back']
+    }
+  ],
+  'Chest': [
+    { 
+      name: 'Yoga Block Chest Stretch', 
+      difficulty: 'Beginner', 
+      image: '/images/stretches/chest/yoga-block-chest.jpg',
+      primaryMuscles: ['Chest', 'Pectoralis Major'],
+      secondaryMuscles: ['Shoulders']
+    },
+    { 
+      name: 'Doorway Chest Stretch', 
+      difficulty: 'Beginner', 
+      image: '/images/stretches/chest/doorway-chest.jpg',
+      primaryMuscles: ['Chest', 'Pectoralis'],
+      secondaryMuscles: ['Shoulders']
+    },
+    { 
+      name: 'Monster Band Shoulder Opener', 
+      difficulty: 'Intermediate', 
+      image: '/images/stretches/chest/monster-band-opener.jpg',
+      primaryMuscles: ['Chest', 'Shoulders'],
+      secondaryMuscles: ['Upper Back']
+    },
+    { 
+      name: 'Swiss Ball Chest Stretch', 
+      difficulty: 'Advanced', 
+      image: '/images/stretches/chest/swiss-ball-chest.jpg',
+      primaryMuscles: ['Chest', 'Pectoralis'],
+      secondaryMuscles: ['Shoulders', 'Core']
+    }
+  ],
+  'Elbow': [
+    { 
+      name: 'Wrist Flexor Stretch', 
+      difficulty: 'Beginner', 
+      image: '/images/stretches/elbow/wrist-flexor.jpg',
+      primaryMuscles: ['Elbow', 'Forearm Flexors'],
+      secondaryMuscles: ['Wrist']
+    },
+    { 
+      name: 'Wrist Extensor Stretch', 
+      difficulty: 'Beginner', 
+      image: '/images/stretches/elbow/wrist-extensor.jpg',
+      primaryMuscles: ['Elbow', 'Forearm Extensors'],
+      secondaryMuscles: ['Wrist']
+    }
+  ],
+  'Wrist': [
+    { 
+      name: 'Prayer Stretch', 
+      difficulty: 'Beginner', 
+      image: '/images/stretches/wrist/prayer-stretch.jpg',
+      primaryMuscles: ['Wrist', 'Forearm'],
+      secondaryMuscles: ['Hands']
+    },
+    { 
+      name: 'Reverse Prayer Stretch', 
+      difficulty: 'Intermediate', 
+      image: '/images/stretches/wrist/reverse-prayer.jpg',
+      primaryMuscles: ['Wrist', 'Forearm'],
+      secondaryMuscles: ['Hands']
+    }
+  ],
+  'Core': [
+    { 
+      name: 'Cat-Cow Stretch', 
+      difficulty: 'Beginner', 
+      image: '/images/stretches/core/cat-cow.jpg',
+      primaryMuscles: ['Core', 'Spine'],
+      secondaryMuscles: ['Back']
+    },
+    { 
+      name: 'Child\'s Pose', 
+      difficulty: 'Beginner', 
+      image: '/images/stretches/core/childs-pose.jpg',
+      primaryMuscles: ['Core', 'Lower Back'],
+      secondaryMuscles: ['Hips', 'Back']
+    }
+  ],
+  'Back': [
+    { 
+      name: 'Dowel Lats Stretch', 
+      difficulty: 'Intermediate', 
+      image: '/images/stretches/back/dowel-lats.jpg',
+      primaryMuscles: ['Back', 'Latissimus Dorsi'],
+      secondaryMuscles: ['Shoulders']
+    },
+    { 
+      name: 'Banded Lats Stretch', 
+      difficulty: 'Intermediate', 
+      image: '/images/stretches/back/banded-lats.jpg',
+      primaryMuscles: ['Back', 'Latissimus Dorsi'],
+      secondaryMuscles: ['Shoulders']
+    }
+  ],
+  'Lower Back': [
+    { 
+      name: 'Knee-to-Chest Stretch', 
+      difficulty: 'Beginner', 
+      image: '/images/stretches/lower-back/knee-to-chest.jpg',
+      primaryMuscles: ['Lower Back', 'Hips'],
+      secondaryMuscles: ['Glutes']
+    },
+    { 
+      name: 'Piriformis Stretch', 
+      difficulty: 'Intermediate', 
+      image: '/images/stretches/lower-back/piriformis.jpg',
+      primaryMuscles: ['Lower Back', 'Hips'],
+      secondaryMuscles: ['Glutes']
+    }
+  ],
+  'Spine': [
+    { 
+      name: 'Spinal Twist', 
+      difficulty: 'Beginner', 
+      image: '/images/stretches/spine/spinal-twist.jpg',
+      primaryMuscles: ['Spine', 'Core'],
+      secondaryMuscles: ['Back']
+    },
+    { 
+      name: 'Seated Spinal Rotation', 
+      difficulty: 'Intermediate', 
+      image: '/images/stretches/spine/seated-rotation.jpg',
+      primaryMuscles: ['Spine', 'Core'],
+      secondaryMuscles: ['Back']
+    }
+  ],
+  'Posture': [
+    { 
+      name: 'Wall Angels', 
+      difficulty: 'Beginner', 
+      image: '/images/stretches/posture/wall-angels.jpg',
+      primaryMuscles: ['Posture', 'Upper Back'],
+      secondaryMuscles: ['Shoulders']
+    },
+    { 
+      name: 'Thoracic Extension', 
+      difficulty: 'Intermediate', 
+      image: '/images/stretches/posture/thoracic-extension.jpg',
+      primaryMuscles: ['Posture', 'Upper Back'],
+      secondaryMuscles: ['Spine']
+    }
+  ],
+  'Hip': [
+    { 
+      name: 'Pigeon Pose', 
+      difficulty: 'Intermediate', 
+      image: '/images/stretches/hip/pigeon-pose.jpg',
+      primaryMuscles: ['Hip', 'Glutes'],
+      secondaryMuscles: ['Lower Back']
+    },
+    { 
+      name: 'Hip Flexor Stretch', 
+      difficulty: 'Beginner', 
+      image: '/images/stretches/hip/hip-flexor.jpg',
+      primaryMuscles: ['Hip', 'Hip Flexors'],
+      secondaryMuscles: ['Quadriceps']
+    }
+  ],
+  'Hamstrings': [
+    { 
+      name: 'Standing Hamstring Stretch', 
+      difficulty: 'Beginner', 
+      image: '/images/stretches/hamstrings/standing-hamstring.jpg',
+      primaryMuscles: ['Hamstrings'],
+      secondaryMuscles: ['Glutes']
+    },
+    { 
+      name: 'Seated Hamstring Stretch', 
+      difficulty: 'Beginner', 
+      image: '/images/stretches/hamstrings/seated-hamstring.jpg',
+      primaryMuscles: ['Hamstrings'],
+      secondaryMuscles: ['Lower Back']
+    }
+  ],
+  'Quadriceps': [
+    { 
+      name: 'Standing Quad Stretch', 
+      difficulty: 'Beginner', 
+      image: '/images/stretches/quads/standing-quad.jpg',
+      primaryMuscles: ['Quadriceps'],
+      secondaryMuscles: ['Hips']
+    },
+    { 
+      name: 'Couch Stretch', 
+      difficulty: 'Intermediate', 
+      image: '/images/stretches/quads/couch-stretch.jpg',
+      primaryMuscles: ['Quadriceps', 'Hip Flexors'],
+      secondaryMuscles: ['Hips']
+    }
+  ],
+  'Calves': [
+    { 
+      name: 'Wall Calf Stretch', 
+      difficulty: 'Beginner', 
+      image: '/images/stretches/calves/wall-calf.jpg',
+      primaryMuscles: ['Calves'],
+      secondaryMuscles: ['Achilles']
+    },
+    { 
+      name: 'Seated Calf Stretch', 
+      difficulty: 'Beginner', 
+      image: '/images/stretches/calves/seated-calf.jpg',
+      primaryMuscles: ['Calves'],
+      secondaryMuscles: ['Achilles']
+    }
+  ],
+  'Ankle': [
+    { 
+      name: 'Ankle Circles', 
+      difficulty: 'Beginner', 
+      image: '/images/stretches/ankle/ankle-circles.jpg',
+      primaryMuscles: ['Ankle'],
+      secondaryMuscles: ['Calves']
+    },
+    { 
+      name: 'Achilles Stretch', 
+      difficulty: 'Beginner', 
+      image: '/images/stretches/ankle/achilles.jpg',
+      primaryMuscles: ['Ankle', 'Achilles'],
+      secondaryMuscles: ['Calves']
+    }
+  ]
+};
