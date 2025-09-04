@@ -377,16 +377,44 @@ export const muscleStretches: MuscleStretches = {
   ],
   'Spine': [
     { 
-      name: 'Spinal Twist', 
+      name: 'Scissor Kick', 
       difficulty: 'Beginner', 
-      image: '/images/stretches/spine/spinal-twist.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/bf15d84e-28b9-4fd0-85dd-4a9889d5a18e/scissor+kick.jpg?format=2500w',
       primaryMuscles: ['Spine', 'Core'],
       secondaryMuscles: ['Back']
     },
     { 
-      name: 'Seated Spinal Rotation', 
+      name: 'Side Plank Hip Dip', 
       difficulty: 'Intermediate', 
-      image: '/images/stretches/spine/seated-rotation.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/5112d607-62c4-435e-8315-43f4d102263d/side+plank+hip+dips.jpg?format=2500w',
+      primaryMuscles: ['Spine', 'Core'],
+      secondaryMuscles: ['Back']
+    },
+    { 
+      name: 'Sky Diver', 
+      difficulty: 'Intermediate', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/c0182157-733f-4bbe-9424-cc970ebcdd69/sky+diver.jpg?format=2500w',
+      primaryMuscles: ['Spine', 'Core'],
+      secondaryMuscles: ['Back']
+    },
+    { 
+      name: 'Doorway Side Stretch', 
+      difficulty: 'Intermediate', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/c7cb0b3f-4576-4fbc-89d7-6e899fe075a9/doorway+side+stretch.jpg?format=2500w',
+      primaryMuscles: ['Spine', 'Core'],
+      secondaryMuscles: ['Back']
+    },
+    { 
+      name: 'Wall Lumbar Extension', 
+      difficulty: 'Intermediate', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/2509bc41-0bb3-4cc5-8dd9-d53db188dff1/wall+lumbar+extension.jpg?format=2500w',
+      primaryMuscles: ['Spine', 'Core'],
+      secondaryMuscles: ['Back']
+    },
+    { 
+      name: 'Disc Opener', 
+      difficulty: 'Intermediate', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/5a32ba43-a028-4248-95b6-37a7a8218f39/disc+opener.jpg?format=2500w',
       primaryMuscles: ['Spine', 'Core'],
       secondaryMuscles: ['Back']
     }
@@ -437,16 +465,49 @@ export const muscleStretches: MuscleStretches = {
   ],
   'Hip': [
     { 
-      name: 'Pigeon Pose', 
+      name: 'Clock Lunges', 
       difficulty: 'Intermediate', 
-      image: '/images/stretches/hip/pigeon-pose.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/6b53ce78-c819-4c41-9053-d1f6cd35fdce/clock+lunge.jpg?format=2500w',
       primaryMuscles: ['Hip', 'Glutes'],
       secondaryMuscles: ['Lower Back']
     },
     { 
-      name: 'Hip Flexor Stretch', 
+      name: 'Reverse Mountain Climber', 
       difficulty: 'Beginner', 
-      image: '/images/stretches/hip/hip-flexor.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/9b4bf037-9522-4e00-8beb-f726d972fc06/reverse+mountain+climber.jpg?format=2500w',
+      primaryMuscles: ['Hip', 'Hip Flexors'],
+      secondaryMuscles: ['Quadriceps']
+    },{ 
+      name: 'Slide Lunge Slider', 
+      difficulty: 'Intermediate', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/b2b0b912-56eb-43a0-9041-5d677fcb068e/side+lunge+slider.jpg?format=2500w',
+      primaryMuscles: ['Hip', 'Glutes'],
+      secondaryMuscles: ['Lower Back']
+    },
+    { 
+      name: 'Foam Roller Hamstring Bridge', 
+      difficulty: 'Beginner', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/40a4d1a0-e538-40be-b506-6d270de39b68/foam+roller+hamstring+bridge.jpg?format=2500w',
+      primaryMuscles: ['Hip', 'Hip Flexors'],
+      secondaryMuscles: ['Quadriceps']
+    },{ 
+      name: 'Single Leg Foam Roller Hamstring Bridge', 
+      difficulty: 'Intermediate', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/24e3cfd6-ffca-4c72-bd21-57f52b650079/single+leg+foam+roller+hamstring+bridge.jpg?format=2500w',
+      primaryMuscles: ['Hip', 'Glutes'],
+      secondaryMuscles: ['Lower Back']
+    },
+    { 
+      name: '90/90 External Rotation', 
+      difficulty: 'Beginner', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/f37540c0-0c57-4831-a9f5-e5e14dd5373c/9090+ER+RAIL.jpg?format=2500w',
+      primaryMuscles: ['Hip', 'Hip Flexors'],
+      secondaryMuscles: ['Quadriceps']
+    },
+    { 
+      name: '90/90 Internal Rotation', 
+      difficulty: 'Beginner', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/63b59681-9063-4377-9eed-76e29e2854df/9090+IR+RAIL.jpg?format=2500w',
       primaryMuscles: ['Hip', 'Hip Flexors'],
       secondaryMuscles: ['Quadriceps']
     }
