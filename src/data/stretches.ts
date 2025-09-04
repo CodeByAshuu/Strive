@@ -23,6 +23,13 @@ export const muscleStretches: MuscleStretches = {
       secondaryMuscles: ['Shoulders']
     },
     { 
+      name: 'Cervical Crunch', 
+      difficulty: 'Beginner', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/93dc0ca9-540b-4601-ad4a-e113392af167/cervical+crunch.jpg?format=2500w',
+      primaryMuscles: ['Neck', 'Deep Cervical Flexors'],
+      secondaryMuscles: ['Upper Back']
+    },
+    { 
       name: 'PNF Cervical Lateral Flexion', 
       difficulty: 'Beginner', 
       image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/14399c40-df67-46ca-a0e3-e7a81452c526/PNF+Cervical+Lateral+Flexion.jpg?format=2500w',

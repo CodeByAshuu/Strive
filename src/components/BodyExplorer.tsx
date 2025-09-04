@@ -78,7 +78,7 @@ export const BodyExplorer: React.FC = () => {
   const [oneRepMax, setOneRepMax] = useState({ weight: '', reps: '', result: 0 })
 
   // Stretch states
-  const [selectedMuscle, setSelectedMuscle] = useState<string>('Hamstrings')
+  const [selectedMuscle, setSelectedMuscle] = useState<string>('Neck')
 
   // Split generator states
   const [splitConfig, setSplitConfig] = useState({
@@ -660,11 +660,11 @@ export const BodyExplorer: React.FC = () => {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Muscle Selection */}
+        {/* First Row: Muscle Selection */}
+        <div className="mb-8">
           <Card className="p-6">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Select Muscle Group</h2>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
               {Object.keys(muscleStretches).map((muscle) => (
                 <motion.button
                   key={muscle}
@@ -683,80 +683,75 @@ export const BodyExplorer: React.FC = () => {
               ))}
             </div>
           </Card>
+        </div>
 
-          {/* Stretch Details */}
-          <div className="space-y-6">
-            <Card className="p-6">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                {selectedMuscle} Stretches
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400">
-                {muscleStretches[selectedMuscle as keyof typeof muscleStretches]?.length || 0} stretches available
-              </p>
-            </Card>
+        {/* Second Row: Stretches in Bento Grid */}
+        <div className="mb-3">
+          <Card className="p-5">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+              {selectedMuscle} Stretches
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400">
+              {muscleStretches[selectedMuscle as keyof typeof muscleStretches]?.length || 0} stretches available
+            </p>
+          </Card>
+        </div>
 
-            {muscleStretches[selectedMuscle as keyof typeof muscleStretches]?.map((stretch: Stretch, index: number) => (
-              <motion.div
-                key={stretch.name}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <GlareCard>
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        stretch.difficulty === 'Beginner' ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-300' :
-                        stretch.difficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-300' :
-                        'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-300'
-                      }`}>
-                        {stretch.difficulty}
-                      </span>
-                    </div>
-                    
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
-                      {stretch.name}
-                    </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+          {muscleStretches[selectedMuscle as keyof typeof muscleStretches]?.map((stretch: Stretch) => (
+              <GlareHover className="h-full">
+                <div className="p-5 md:p-6 h-full flex flex-col">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      stretch.difficulty === 'Beginner' ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-300' :
+                      stretch.difficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-300' :
+                      'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-300'
+                    }`}>
+                      {stretch.difficulty}
+                    </span>
+                  </div>
+                  
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+                    {stretch.name}
+                  </h3>
 
-                    {/* Image Placeholder */}
-                    <div className="mb-4 relative aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
-                      {stretch.image ? (
-                        <img 
-                          src={stretch.image} 
-                          alt={stretch.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-400">
-                          <div className="text-center">
-                            <Target className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                            <p className="text-sm">Image coming soon</p>
-                          </div>
+                  {/* Image Placeholder */}
+                  <div className="mb-3 relative aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden flex-1">
+                    {stretch.image ? (
+                      <img 
+                        src={stretch.image} 
+                        alt={stretch.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-400">
+                        <div className="text-center">
+                          <Target className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                          <p className="text-sm">Image coming soon</p>
                         </div>
-                      )}
-                    </div>
-
-                    {/* Muscles Worked */}
-                    <div className="mb-4">
-                      <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Muscles Worked:</h4>
-                      <div className="flex flex-wrap gap-2">
-                        {stretch.primaryMuscles.map((muscle, idx) => (
-                          <span key={idx} className="px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded-full text-xs">
-                            {muscle}
-                          </span>
-                        ))}
-                        {stretch.secondaryMuscles?.map((muscle, idx) => (
-                          <span key={idx} className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full text-xs">
-                            {muscle}
-                          </span>
-                        ))}
                       </div>
+                    )}
+                  </div>
+
+                  {/* Muscles Worked */}
+                  <div className="mt-auto">
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Muscles Worked:</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {stretch.primaryMuscles.map((muscle, idx) => (
+                        <span key={idx} className="px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded-full text-xs">
+                          {muscle}
+                        </span>
+                      ))}
+                      {stretch.secondaryMuscles?.map((muscle, idx) => (
+                        <span key={idx} className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full text-xs">
+                          {muscle}
+                        </span>
+                      ))}
                     </div>
                   </div>
-                </GlareCard>
-              </motion.div>
-            ))}
-          </div>
+                </div>
+              </GlareHover>
+          ))}
         </div>
       </div>
     </div>
