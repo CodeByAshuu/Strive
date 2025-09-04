@@ -53,60 +53,88 @@ export const muscleStretches: MuscleStretches = {
   ],
   'Shoulders': [
     { 
-      name: 'Banded Reverse Fly', 
+      name: 'Lat Pulldown Slider', 
       difficulty: 'Intermediate', 
-      image: '/images/stretches/shoulders/banded-reverse-fly.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/8870a1d2-5df4-455a-9c2d-c563a139bd84/lat+pulldown+slider.jpg?format=2500w',
       primaryMuscles: ['Shoulders', 'Rear Deltoids'],
       secondaryMuscles: ['Upper Back']
     },
     { 
-      name: 'Doorway Lean Back', 
+      name: 'Irradiated Shoulder Extension', 
       difficulty: 'Beginner', 
-      image: '/images/stretches/shoulders/doorway-lean-back.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/a1535a03-6f58-43fe-936c-3f70d004f357/irradiated+shoulder+extension.jpg?format=2500w',
       primaryMuscles: ['Shoulders', 'Chest'],
       secondaryMuscles: ['Upper Back']
     },
     { 
-      name: 'Cable Face Pull', 
+      name: 'Elevated Child\'s Pose Side Stretch', 
       difficulty: 'Intermediate', 
-      image: '/images/stretches/shoulders/cable-face-pull.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/daf8744b-ca19-4ffc-8923-9d7672bb715a/elevated+childs+pose+side+stretch.jpg?format=2500w',
       primaryMuscles: ['Shoulders', 'Rear Deltoids'],
       secondaryMuscles: ['Upper Back', 'Rhomboids']
     },
     { 
-      name: 'Quadruped Scapular Circles', 
+      name: 'Banded Reverse Fly', 
       difficulty: 'Beginner', 
-      image: '/images/stretches/shoulders/scapular-circles.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/7c00ef60-96ef-472c-b14b-f2ad1dce5d65/banded+reverse+fly.jpg?format=2500w',
       primaryMuscles: ['Shoulders', 'Scapula'],
       secondaryMuscles: ['Upper Back']
     }
   ],
   'Shoulder Blade': [
     { 
-      name: 'Doorway Shoulder Internal Rotation', 
+      name: 'Banded Shoulder Fly', 
       difficulty: 'Beginner', 
-      image: '/images/stretches/shoulder-blade/doorway-internal-rotation.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/7c00ef60-96ef-472c-b14b-f2ad1dce5d65/banded+reverse+fly.jpg?format=2500w',
       primaryMuscles: ['Shoulder Blade', 'Rotator Cuff'],
       secondaryMuscles: ['Shoulders']
     },
     { 
-      name: 'Table Assisted Shoulder Extension', 
+      name: 'Seated Rhomboid Stretch', 
       difficulty: 'Beginner', 
-      image: '/images/stretches/shoulder-blade/table-shoulder-extension.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/6451fb8c-45fc-411c-91b7-6af07a4d5ce4/seated+rhomboid+stretch.jpg?format=2500w',
       primaryMuscles: ['Shoulder Blade', 'Latissimus Dorsi'],
       secondaryMuscles: ['Back']
     },
     { 
-      name: 'Prone W-Stretch', 
+      name: 'Doorway Lean Back', 
       difficulty: 'Intermediate', 
-      image: '/images/stretches/shoulder-blade/prone-w-stretch.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/65597834-0c42-4238-8d39-50eb96f3113b/doorway+lean+back.jpg?format=2500w',
       primaryMuscles: ['Shoulder Blade', 'Rhomboids'],
       secondaryMuscles: ['Upper Back']
     },
     { 
-      name: 'Wall Crawl', 
+      name: 'Cross Body Reverse Fly', 
       difficulty: 'Intermediate', 
-      image: '/images/stretches/shoulder-blade/wall-crawl.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/1f40ad85-2e55-4ac1-bfd4-98714729f431/cross+body+reverse+fly.jpg?format=2500w',
+      primaryMuscles: ['Shoulder Blade', 'Scapular Stabilizers'],
+      secondaryMuscles: ['Shoulders', 'Upper Back']
+    },
+    { 
+      name: 'Incline Bench Lateral Raise', 
+      difficulty: 'Intermediate', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/144aab22-55b9-46a4-9aa8-e8992794593d/incline+bench+lateral+raise.jpg?format=2500w',
+      primaryMuscles: ['Shoulder Blade', 'Scapular Stabilizers'],
+      secondaryMuscles: ['Shoulders', 'Upper Back']
+    },
+    { 
+      name: 'Scapula Flutters', 
+      difficulty: 'Intermediate', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/144aab22-55b9-46a4-9aa8-e8992794593d/incline+bench+lateral+raise.jpg?format=2500w',
+      primaryMuscles: ['Shoulder Blade', 'Scapular Stabilizers'],
+      secondaryMuscles: ['Shoulders', 'Upper Back']
+    },
+    { 
+      name: 'Prone Pinwheel', 
+      difficulty: 'Intermediate', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/96fe5ef4-7397-439e-aeea-34522b04fd7f/prone+pinwheel.jpg?format=2500w',
+      primaryMuscles: ['Shoulder Blade', 'Scapular Stabilizers'],
+      secondaryMuscles: ['Shoulders', 'Upper Back']
+    },
+    { 
+      name: 'Quadruped Scapular Circles', 
+      difficulty: 'Intermediate', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/1c0b7d25-24c3-4bf5-aac6-24a7f57d3af5/quadruped+scapular+circles.jpg?format=2500w',
       primaryMuscles: ['Shoulder Blade', 'Scapular Stabilizers'],
       secondaryMuscles: ['Shoulders', 'Upper Back']
     }
@@ -143,16 +171,30 @@ export const muscleStretches: MuscleStretches = {
   ],
   'Elbow': [
     { 
-      name: 'Wrist Flexor Stretch', 
+      name: 'Hang Grip Curl', 
       difficulty: 'Beginner', 
-      image: '/images/stretches/elbow/wrist-flexor.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/3f346a50-ab21-46e7-8ce6-97c83aa037e1/hang+grip+curl.jpg?format=2500w',
       primaryMuscles: ['Elbow', 'Forearm Flexors'],
       secondaryMuscles: ['Wrist']
     },
     { 
-      name: 'Wrist Extensor Stretch', 
+      name: 'Anti-Pronation Reverse Curl', 
       difficulty: 'Beginner', 
-      image: '/images/stretches/elbow/wrist-extensor.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/f6d025d0-65ec-4b07-a87a-3737b70334d4/anti-pronation+reverse+curl.jpg?format=2500w',
+      primaryMuscles: ['Elbow', 'Forearm Extensors'],
+      secondaryMuscles: ['Wrist']
+    },
+    { 
+      name: 'Anti-Pronation Straight Bar Curl', 
+      difficulty: 'Beginner', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/4f969239-2522-49dc-b208-54eee537cb74/anti-pronation+straight+bar+curl.jpg?format=2500w',
+      primaryMuscles: ['Elbow', 'Forearm Extensors'],
+      secondaryMuscles: ['Wrist']
+    },
+    { 
+      name: 'Elbow CAR', 
+      difficulty: 'Beginner', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/ae80dd7b-6ad9-4520-97f0-9d177c20fb0a/elbow+car.jpg?format=2500w',
       primaryMuscles: ['Elbow', 'Forearm Extensors'],
       secondaryMuscles: ['Wrist']
     }
