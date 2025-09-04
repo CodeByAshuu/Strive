@@ -417,6 +417,27 @@ export const muscleStretches: MuscleStretches = {
       image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/5a32ba43-a028-4248-95b6-37a7a8218f39/disc+opener.jpg?format=2500w',
       primaryMuscles: ['Spine', 'Core'],
       secondaryMuscles: ['Back']
+    },
+    { 
+      name: 'Foam Roller Thoraic Extension', 
+      difficulty: 'Intermediate', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/95520dea-9a90-46f5-ae0b-4941fe454fe3/foam+roller+thoracic+extension.jpg?format=2500w',
+      primaryMuscles: ['Spine', 'Core'],
+      secondaryMuscles: ['Back']
+    },
+    { 
+      name: 'Prisoner Rotation', 
+      difficulty: 'Intermediate', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/dc171412-b958-434e-864b-975142dd9a6f/prisoner+rotation.jpg?format=2500w',
+      primaryMuscles: ['Spine', 'Core'],
+      secondaryMuscles: ['Back']
+    },
+    { 
+      name: 'Segmented Thoracolumbar Extension', 
+      difficulty: 'Intermediate', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/3ab631eb-3efa-4bad-b3f5-d0014934f20f/segmental+thoracolumbar+extension.jpg?format=2500w',
+      primaryMuscles: ['Spine', 'Core'],
+      secondaryMuscles: ['Back']
     }
   ],
   'Posture': [
@@ -514,66 +535,85 @@ export const muscleStretches: MuscleStretches = {
   ],
   'Hamstrings': [
     { 
-      name: 'Standing Hamstring Stretch', 
-      difficulty: 'Beginner', 
-      image: '/images/stretches/hamstrings/standing-hamstring.jpg',
-      primaryMuscles: ['Hamstrings'],
+      name: 'Ankle Sciatic Nerve Flossing', 
+      difficulty: 'Intermediate', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/548b5571-1b5e-4992-a2a8-de699218f1a8/ankle+sciatic+nerve+flossing.jpg?format=2500w',
+      primaryMuscles: ['Hamstrings','Lower Back', 'Hips'],
       secondaryMuscles: ['Glutes']
     },
     { 
-      name: 'Seated Hamstring Stretch', 
-      difficulty: 'Beginner', 
-      image: '/images/stretches/hamstrings/seated-hamstring.jpg',
-      primaryMuscles: ['Hamstrings'],
-      secondaryMuscles: ['Lower Back']
+      name: 'Kettle Bell Romanian Deadlift', 
+      difficulty: 'Intermediate', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/1632679994213-42OVRN1T9AL4XVBZEMKC/Kettlebell%2BRomanian%2BDeadlift.jpg?format=2500w',
+      primaryMuscles: ['Hamstrings','Posture', 'Upper Back'],
+      secondaryMuscles: ['Spine']
+    },
+    { 
+      name: 'Kettle Bell Single Leg Deadlift', 
+      difficulty: 'Intermediate', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/1632679070200-GPF74NS0IRMA0U9Z1UM8/Kettlebell%2BSingle%2BLeg%2BDeadlift.jpg?format=2500w',
+      primaryMuscles: ['Hamstring','Posture', 'Upper Back'],
+      secondaryMuscles: ['Spine']
+    },
+    { 
+      name: 'Active Hamstring Stretch', 
+      difficulty: 'Intermediate', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/6f41b3a7-d683-4482-aafd-788e132ad3bd/Active+Hamstring+Stretch.jpg?format=2500w',
+      primaryMuscles: ['Hamstring','Posture', 'Upper Back'],
+      secondaryMuscles: ['Spine']
+    },
+    { 
+      name: 'Reverse Banded Mountain Climber', 
+      difficulty: 'Intermediate', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/f00ff260-987a-47bb-81ab-8c80762e8390/reverse+banded+mountain+climber.jpg?format=2500w',
+      primaryMuscles: ['Hamstring','Posture', 'Upper Back'],
+      secondaryMuscles: ['Spine']
+    },
+    { 
+      name: 'Incline Banded Mountain Climber', 
+      difficulty: 'Intermediate', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/50bdaa38-259b-402a-8591-421efb79b4ba/incline+banded+mountain+climber.jpg?format=2500w',
+      primaryMuscles: ['Hamstring','Posture', 'Upper Back'],
+      secondaryMuscles: ['Spine']
     }
   ],
   'Quadriceps': [
     { 
-      name: 'Standing Quad Stretch', 
+      name: 'Banded B-Stance Squat', 
       difficulty: 'Beginner', 
-      image: '/images/stretches/quads/standing-quad.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/80404749-90c1-4dec-8cb0-2bece5c1e658/banded+b-stance+squat.jpg?format=2500w',
       primaryMuscles: ['Quadriceps'],
       secondaryMuscles: ['Hips']
     },
     { 
-      name: 'Couch Stretch', 
+      name: 'Twisted Bulgarian Split Squat', 
       difficulty: 'Intermediate', 
-      image: '/images/stretches/quads/couch-stretch.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/e0b71fe6-ba7f-4b97-b80f-fd73890b09c2/twist+bulgarian+split+squat.jpg?format=2500w',
+      primaryMuscles: ['Quadriceps', 'Hip Flexors'],
+      secondaryMuscles: ['Hips']
+    },
+    { 
+      name: 'Half Kneel Quad Stretch', 
+      difficulty: 'Intermediate', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/08188788-de58-448d-80b8-46c8734671f5/half+kneel+quads+stretch.jpg?format=2500w',
       primaryMuscles: ['Quadriceps', 'Hip Flexors'],
       secondaryMuscles: ['Hips']
     }
   ],
   'Calves': [
     { 
-      name: 'Wall Calf Stretch', 
+      name: 'Air Sit Calf Raise', 
       difficulty: 'Beginner', 
-      image: '/images/stretches/calves/wall-calf.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/e3e35a00-4915-4219-aa5c-118121ec5bf0/air+sit+calf+raise.jpg?format=2500w',
       primaryMuscles: ['Calves'],
       secondaryMuscles: ['Achilles']
     },
     { 
-      name: 'Seated Calf Stretch', 
+      name: 'Heel Raise Wall Sit', 
       difficulty: 'Beginner', 
-      image: '/images/stretches/calves/seated-calf.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/d6e80a17-a611-43a5-ad3a-07b09c7e950c/heel+raise+wall+squat.jpg?format=2500w',
       primaryMuscles: ['Calves'],
       secondaryMuscles: ['Achilles']
-    }
-  ],
-  'Ankle': [
-    { 
-      name: 'Ankle Circles', 
-      difficulty: 'Beginner', 
-      image: '/images/stretches/ankle/ankle-circles.jpg',
-      primaryMuscles: ['Ankle'],
-      secondaryMuscles: ['Calves']
-    },
-    { 
-      name: 'Achilles Stretch', 
-      difficulty: 'Beginner', 
-      image: '/images/stretches/ankle/achilles.jpg',
-      primaryMuscles: ['Ankle', 'Achilles'],
-      secondaryMuscles: ['Calves']
     }
   ]
 };
