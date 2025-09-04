@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Calculator, Gamepad2, Blocks as Stretch, Dumbbell, ArrowLeft, Download, Target, Clock, MapPin, Zap } from 'lucide-react'
+import { Calculator, Gamepad2, Blocks as Stretchs, Dumbbell, ArrowLeft, Download, Target, Clock, MapPin, Zap } from 'lucide-react'
 import { Card, GlareCard } from './ui/Card'
 import { Button } from './ui/Button'
 import { useAuth } from './../contexts/AuthContext'
 import { supabase } from './../lib/supabase'
+import { muscleStretches, type Stretch } from '../data/stretches';
 import jsPDF from 'jspdf'
 import GlareHover from './ui/GlareHover'
 import cutTextBg from '../assets/cut-text-bg-3.jpeg'
+
 
 type Section = 'main' | 'calculator' | 'funzone' | 'stretch' | 'split'
 
@@ -27,13 +29,6 @@ interface Challenge {
   duration: string
   difficulty: string
   completed: boolean
-}
-
-interface Stretch {
-  name: string
-  duration: string
-  difficulty: 'Beginner' | 'Intermediate' | 'Advanced'
-  image?: string
 }
 
 
@@ -71,74 +66,6 @@ const challenges: Challenge[] = [
   }
 ]
 
-const muscleStretches = {
-  'Neck': [
-    { name: 'Doorway Chest Stretch', duration: '30-60s', instructions: ['Place forearm on doorframe', 'Step forward gently', 'Feel stretch across chest'], difficulty: 'Beginner' },
-    { name: 'Wall Angels', duration: '60s', instructions: ['Stand against wall', 'Move arms up and down', 'Keep contact with wall'], difficulty: 'Beginner' }
-  ],
-  'Shoulders': [
-    { name: 'Cross-Body Stretch', duration: '30s each arm', instructions: ['Pull arm across chest', 'Use other arm to assist', 'Feel stretch in shoulder'], difficulty: 'Beginner' },
-    { name: 'Overhead Tricep Stretch', duration: '30s each arm', instructions: ['Reach arm overhead', 'Bend elbow behind head', 'Pull with other hand'], difficulty: 'Beginner' }
-  ],
-  'Shoulder Blade': [
-    { name: 'Cross-Body Stretch', duration: '30s each arm', instructions: ['Pull arm across chest', 'Use other arm to assist', 'Feel stretch in shoulder'], difficulty: 'Beginner' },
-    { name: 'Overhead Tricep Stretch', duration: '30s each arm', instructions: ['Reach arm overhead', 'Bend elbow behind head', 'Pull with other hand'], difficulty: 'Beginner' }
-  ],
-  'Chest': [
-    { name: 'Doorway Chest Stretch', duration: '30-60s', instructions: ['Place forearm on doorframe', 'Step forward gently', 'Feel stretch across chest'], difficulty: 'Beginner' },
-    { name: 'Wall Angels', duration: '60s', instructions: ['Stand against wall', 'Move arms up and down', 'Keep contact with wall'], difficulty: 'Beginner' }
-  ],
-  'Elbow': [
-    { name: 'Doorway Chest Stretch', duration: '30-60s', instructions: ['Place forearm on doorframe', 'Step forward gently', 'Feel stretch across chest'], difficulty: 'Beginner' },
-    { name: 'Wall Angels', duration: '60s', instructions: ['Stand against wall', 'Move arms up and down', 'Keep contact with wall'], difficulty: 'Beginner' }
-  ],
-  'Wrist': [
-    { name: 'Doorway Chest Stretch', duration: '30-60s', instructions: ['Place forearm on doorframe', 'Step forward gently', 'Feel stretch across chest'], difficulty: 'Beginner' },
-    { name: 'Wall Angels', duration: '60s', instructions: ['Stand against wall', 'Move arms up and down', 'Keep contact with wall'], difficulty: 'Beginner' }
-  ],
-  'Core': [
-    { name: 'Doorway Chest Stretch', duration: '30-60s', instructions: ['Place forearm on doorframe', 'Step forward gently', 'Feel stretch across chest'], difficulty: 'Beginner' },
-    { name: 'Wall Angels', duration: '60s', instructions: ['Stand against wall', 'Move arms up and down', 'Keep contact with wall'], difficulty: 'Beginner' }
-  ],
-  'Back': [
-    { name: 'Cat-Cow Stretch', duration: '60s', instructions: ['Start on hands and knees', 'Arch and round your back', 'Move slowly and controlled'], difficulty: 'Beginner' },
-    { name: 'Child\'s Pose', duration: '60-120s', instructions: ['Kneel on floor', 'Sit back on heels', 'Reach arms forward'], difficulty: 'Beginner' }
-  ],
-  'Lower Back': [
-    { name: 'Doorway Chest Stretch', duration: '30-60s', instructions: ['Place forearm on doorframe', 'Step forward gently', 'Feel stretch across chest'], difficulty: 'Beginner' },
-    { name: 'Wall Angels', duration: '60s', instructions: ['Stand against wall', 'Move arms up and down', 'Keep contact with wall'], difficulty: 'Beginner' }
-  ],
-  'Spine': [
-    { name: 'Doorway Chest Stretch', duration: '30-60s', instructions: ['Place forearm on doorframe', 'Step forward gently', 'Feel stretch across chest'], difficulty: 'Beginner' },
-    { name: 'Wall Angels', duration: '60s', instructions: ['Stand against wall', 'Move arms up and down', 'Keep contact with wall'], difficulty: 'Beginner' }
-  ],
-  'Posture': [
-    { name: 'Doorway Chest Stretch', duration: '30-60s', instructions: ['Place forearm on doorframe', 'Step forward gently', 'Feel stretch across chest'], difficulty: 'Beginner' },
-    { name: 'Wall Angels', duration: '60s', instructions: ['Stand against wall', 'Move arms up and down', 'Keep contact with wall'], difficulty: 'Beginner' }
-  ],
-  'Hip': [
-    { name: 'Doorway Chest Stretch', duration: '30-60s', instructions: ['Place forearm on doorframe', 'Step forward gently', 'Feel stretch across chest'], difficulty: 'Beginner' },
-    { name: 'Wall Angels', duration: '60s', instructions: ['Stand against wall', 'Move arms up and down', 'Keep contact with wall'], difficulty: 'Beginner' }
-  ],
-  'Hamstrings': [
-    { name: 'Standing Forward Fold', duration: '30-60s', instructions: ['Stand with feet hip-width apart', 'Slowly fold forward', 'Let arms hang naturally'], difficulty: 'Beginner' },
-    { name: 'Seated Hamstring Stretch', duration: '30s each leg', instructions: ['Sit with one leg extended', 'Reach toward your toes', 'Keep back straight'], difficulty: 'Beginner' }
-  ],
-  'Quadriceps': [
-    { name: 'Standing Quad Stretch', duration: '30s each leg', instructions: ['Stand on one leg', 'Pull heel to glute', 'Keep knees together'], difficulty: 'Beginner' },
-    { name: 'Couch Stretch', duration: '60-90s each leg', instructions: ['Place back foot on couch', 'Lunge forward', 'Feel stretch in hip flexors'], difficulty: 'Intermediate' }
-  ],
-  'Calves': [
-    { name: 'Wall Calf Stretch', duration: '30s each leg', instructions: ['Place hands on wall', 'Step back with one leg', 'Keep heel down'], difficulty: 'Beginner' },
-    { name: 'Seated Calf Stretch', duration: '30s each leg', instructions: ['Sit with leg extended', 'Pull toes toward shin', 'Feel stretch in calf'], difficulty: 'Beginner' }
-  ],
-  'Ankle': [
-    { name: 'Doorway Chest Stretch', duration: '30-60s', instructions: ['Place forearm on doorframe', 'Step forward gently', 'Feel stretch across chest'], difficulty: 'Beginner' },
-    { name: 'Wall Angels', duration: '60s', instructions: ['Stand against wall', 'Move arms up and down', 'Keep contact with wall'], difficulty: 'Beginner' }
-  ],
-  
-
-}
 
 export const BodyExplorer: React.FC = () => {
   const [currentSection, setCurrentSection] = useState<Section>('main')
@@ -356,7 +283,7 @@ export const BodyExplorer: React.FC = () => {
       id: 'stretch',
       title: 'Stretch Library',
       description: 'Targeted stretches for every muscle',
-      icon: Stretch,
+      icon: Stretchs,
       gradient: 'from-cyan-500 to-blue-600'
     },
     {
@@ -714,103 +641,127 @@ export const BodyExplorer: React.FC = () => {
   }
 
   if (currentSection === 'stretch') {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pt-20 pb-8">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-4xl font-bold">
-              <span className="bg-gradient-to-r from-emerald-500 to-teal-600 bg-clip-text text-transparent">
-                Stretch Library
-              </span>
-            </h1>
-            <Button
-              variant="ghost"
-              onClick={() => setCurrentSection('main')}
-              className="mr-4 flex justify-center items-center text-white hover:text-gray-900"
-            >
-              <ArrowLeft className="w-4 h-4 mr-1" />
-              Back
-            </Button>
-          </div>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pt-20 pb-8">
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-4xl font-bold">
+            <span className="bg-gradient-to-r from-emerald-500 to-teal-600 bg-clip-text text-transparent">
+              Stretch Library
+            </span>
+          </h1>
+          <Button
+            variant="ghost"
+            onClick={() => setCurrentSection('main')}
+            className="mr-4 flex justify-center items-center text-white hover:text-gray-900"
+          >
+            <ArrowLeft className="w-4 h-4 mr-1" />
+            Back
+          </Button>
+        </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Muscle Selection */}
-            <Card className="p-6">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Select Muscle Group</h2>
-              <div className="grid grid-cols-2 gap-3">
-                {Object.keys(muscleStretches).map((muscle) => (
-                  <motion.button
-                    key={muscle}
-                    onClick={() => setSelectedMuscle(muscle)}
-                    className={`p-3 rounded-xl border text-left transition-all  ${
-                      selectedMuscle === muscle
-                        ? 'border-cyan-500 bg-cyan-50 dark:bg-cyan-900/20 text-cyan-300'
-                        : 'border-gray-300 dark:border-gray-600 hover:border-cyan-300 text-gray-300'
-                    }`}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <Target className="w-4 h-4 mb-1" />
-                    <span className="text-sm font-medium">{muscle}</span>
-                  </motion.button>
-                ))}
-              </div>
-            </Card>
-
-            {/* Stretch Details */}
-            <div className="space-y-6">
-              <Card className="p-6">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                  {selectedMuscle} Stretches
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400">
-                  {muscleStretches[selectedMuscle as keyof typeof muscleStretches]?.length || 0} stretches available
-                </p>
-              </Card>
-
-              {muscleStretches[selectedMuscle as keyof typeof muscleStretches]?.map((stretch, index) => (
-                <motion.div
-                  key={stretch.name}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Muscle Selection */}
+          <Card className="p-6">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Select Muscle Group</h2>
+            <div className="grid grid-cols-2 gap-3">
+              {Object.keys(muscleStretches).map((muscle) => (
+                <motion.button
+                  key={muscle}
+                  onClick={() => setSelectedMuscle(muscle)}
+                  className={`p-3 rounded-xl border text-left transition-all ${
+                    selectedMuscle === muscle
+                      ? 'border-cyan-500 bg-cyan-50 dark:bg-cyan-900/20 text-cyan-700 dark:text-cyan-300'
+                      : 'border-gray-300 dark:border-gray-600 hover:border-cyan-300 text-gray-700 dark:text-gray-300'
+                  }`}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  <GlareCard>
-                    <div className="p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          stretch.difficulty === 'Beginner' ? 'bg-green-100 text-green-600' :
-                          'bg-yellow-100 text-yellow-600'
-                        }`}>
-                          {stretch.difficulty}
-                        </span>
-                        <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full text-sm">
-                          {stretch.duration}
-                        </span>
-                      </div>
-                      
-                      <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
-                        {stretch.name}
-                      </h3>
-                      
-                      <div className="mb-4">
-                        <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Instructions:</h4>
-                        <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                          {stretch.instructions.map((instruction, idx) => (
-                            <li key={idx}>• {instruction}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  </GlareCard>
-                </motion.div>
+                  <Target className="w-4 h-4 mb-1" />
+                  <span className="text-sm font-medium">{muscle}</span>
+                </motion.button>
               ))}
             </div>
+          </Card>
+
+          {/* Stretch Details */}
+          <div className="space-y-6">
+            <Card className="p-6">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                {selectedMuscle} Stretches
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400">
+                {muscleStretches[selectedMuscle as keyof typeof muscleStretches]?.length || 0} stretches available
+              </p>
+            </Card>
+
+            {muscleStretches[selectedMuscle as keyof typeof muscleStretches]?.map((stretch: Stretch, index: number) => (
+              <motion.div
+                key={stretch.name}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <GlareCard>
+                  <div className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        stretch.difficulty === 'Beginner' ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-300' :
+                        stretch.difficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-300' :
+                        'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-300'
+                      }`}>
+                        {stretch.difficulty}
+                      </span>
+                    </div>
+                    
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+                      {stretch.name}
+                    </h3>
+
+                    {/* Image Placeholder */}
+                    <div className="mb-4 relative aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
+                      {stretch.image ? (
+                        <img 
+                          src={stretch.image} 
+                          alt={stretch.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-400">
+                          <div className="text-center">
+                            <Target className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                            <p className="text-sm">Image coming soon</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Muscles Worked */}
+                    <div className="mb-4">
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Muscles Worked:</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {stretch.primaryMuscles.map((muscle, idx) => (
+                          <span key={idx} className="px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded-full text-xs">
+                            {muscle}
+                          </span>
+                        ))}
+                        {stretch.secondaryMuscles?.map((muscle, idx) => (
+                          <span key={idx} className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full text-xs">
+                            {muscle}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </GlareCard>
+              </motion.div>
+            ))}
           </div>
         </div>
       </div>
-    )
-  }
+    </div>
+  )
+}
 
   if (currentSection === 'split') {
     return (

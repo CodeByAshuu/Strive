@@ -1,8 +1,10 @@
-// src/data/stretches.ts
+// src/types/stretch.ts
+export type Difficulty = 'Beginner' | 'Intermediate' | 'Advanced';
+
 export interface Stretch {
   name: string;
-  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
-  image?: string; // URL placeholder for images
+  difficulty: Difficulty;
+  image?: string;
   primaryMuscles: string[];
   secondaryMuscles?: string[];
 }
@@ -14,30 +16,37 @@ export interface MuscleStretches {
 export const muscleStretches: MuscleStretches = {
   'Neck': [
     { 
-      name: 'Cervical Side Crunch', 
+      name: 'Seated Levator Scapulae Stretch', 
       difficulty: 'Beginner', 
-      image: '/images/stretches/neck/cervical-side-crunch.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/4e925307-6db5-4adb-8339-4d75d5afe674/seated+levator+scapulae+strain.jpg?format=2500w',
       primaryMuscles: ['Neck', 'Upper Trapezius'],
       secondaryMuscles: ['Shoulders']
     },
     { 
-      name: 'Chin Tucks', 
+      name: 'PNF Cervical Lateral Flexion', 
       difficulty: 'Beginner', 
-      image: '/images/stretches/neck/chin-tucks.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/14399c40-df67-46ca-a0e3-e7a81452c526/PNF+Cervical+Lateral+Flexion.jpg?format=2500w',
       primaryMuscles: ['Neck', 'Deep Cervical Flexors'],
       secondaryMuscles: ['Upper Back']
     },
     { 
-      name: 'Levator Scapulae Stretch', 
+      name: 'PNF Cervical Rotation', 
       difficulty: 'Intermediate', 
-      image: '/images/stretches/neck/levator-scapulae.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/e60a6a08-4d92-4339-81ba-411ae9e56848/PNF+Cervical+Rotation.jpg?format=2500w',
       primaryMuscles: ['Neck', 'Levator Scapulae'],
       secondaryMuscles: ['Shoulders']
     },
     { 
-      name: 'Upper Trapezius PNF Stretch', 
+      name: 'Head Drop', 
       difficulty: 'Advanced', 
-      image: '/images/stretches/neck/upper-trapezius-pnf.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/21b52548-eb8f-4cc7-9646-9dc20bf07f8d/Head+Drop.jpg?format=2500w',
+      primaryMuscles: ['Neck', 'Upper Trapezius'],
+      secondaryMuscles: ['Shoulders']
+    },
+    { 
+      name: 'Towel Cervical Distraction', 
+      difficulty: 'Beginner', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/1635543991870-LEVU4Q512MJNE41P664Q/Towel%2BCervical%2BDistraction.jpg?format=2500w',
       primaryMuscles: ['Neck', 'Upper Trapezius'],
       secondaryMuscles: ['Shoulders']
     }
