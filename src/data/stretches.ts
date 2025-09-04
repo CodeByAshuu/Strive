@@ -148,30 +148,44 @@ export const muscleStretches: MuscleStretches = {
   ],
   'Chest': [
     { 
-      name: 'Yoga Block Chest Stretch', 
+      name: 'Cable Fly', 
       difficulty: 'Beginner', 
-      image: '/images/stretches/chest/yoga-block-chest.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/04debb77-3167-4d2f-9e75-b69bba3a3b34/cable+fly.jpg?format=2500w',
       primaryMuscles: ['Chest', 'Pectoralis Major'],
       secondaryMuscles: ['Shoulders']
     },
     { 
-      name: 'Doorway Chest Stretch', 
+      name: 'Decline Bench Press', 
       difficulty: 'Beginner', 
-      image: '/images/stretches/chest/doorway-chest.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/3924b3fc-937a-4a35-8dd9-1068e45c9209/decline+bench+press.jpg?format=2500w',
       primaryMuscles: ['Chest', 'Pectoralis'],
       secondaryMuscles: ['Shoulders']
     },
     { 
-      name: 'Monster Band Shoulder Opener', 
+      name: 'Incline Bench Press', 
       difficulty: 'Intermediate', 
-      image: '/images/stretches/chest/monster-band-opener.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/571f3b3c-0dbf-4967-8b04-c786fcddc941/incline+bench+press.jpg?format=2500w',
       primaryMuscles: ['Chest', 'Shoulders'],
       secondaryMuscles: ['Upper Back']
     },
     { 
-      name: 'Swiss Ball Chest Stretch', 
+      name: 'Doorway Chest Stretch', 
       difficulty: 'Advanced', 
-      image: '/images/stretches/chest/swiss-ball-chest.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/bf602891-d983-47a2-bab2-d2e1719b5ffd/Doorway+Chest+Stretch.jpg?format=2500w',
+      primaryMuscles: ['Chest', 'Pectoralis'],
+      secondaryMuscles: ['Shoulders', 'Core']
+    },
+    { 
+      name: 'Deficit Push Up', 
+      difficulty: 'Advanced', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/8940882e-e8ed-4269-93ec-a090eb430dae/deficit+push+up.jpg?format=2500w',
+      primaryMuscles: ['Chest', 'Pectoralis'],
+      secondaryMuscles: ['Shoulders', 'Core']
+    },
+    { 
+      name: 'Floor Chest Stretch', 
+      difficulty: 'Advanced', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/90031ff0-0b3a-4404-913d-629d40caaa52/Floor+Chest+Stretch.jpg?format=2500w',
       primaryMuscles: ['Chest', 'Pectoralis'],
       secondaryMuscles: ['Shoulders', 'Core']
     }
@@ -208,64 +222,155 @@ export const muscleStretches: MuscleStretches = {
   ],
   'Wrist': [
     { 
-      name: 'Prayer Stretch', 
+      name: 'Pinch Grip Plate', 
       difficulty: 'Beginner', 
-      image: '/images/stretches/wrist/prayer-stretch.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/0eac8018-1a06-40ba-9563-bcd34e9be241/pinch+grip+plate+supination.jpg?format=2500w',
       primaryMuscles: ['Wrist', 'Forearm'],
       secondaryMuscles: ['Hands']
     },
     { 
-      name: 'Reverse Prayer Stretch', 
+      name: 'Wrist Flexor Tendon Gliding', 
       difficulty: 'Intermediate', 
-      image: '/images/stretches/wrist/reverse-prayer.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/78352c14-d1ec-4e79-903e-ccf9a98005c2/wrist+flexor+tendon+gliding.jpg?format=2500w',
+      primaryMuscles: ['Wrist', 'Forearm'],
+      secondaryMuscles: ['Hands']
+    },
+    { 
+      name: 'Straight Bar Ulnar Deviation', 
+      difficulty: 'Intermediate', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/508a1145-3b74-4ddd-a92a-0c1659fafe24/straight+bar+ulnar+deviation.jpg?format=2500w',
       primaryMuscles: ['Wrist', 'Forearm'],
       secondaryMuscles: ['Hands']
     }
   ],
   'Core': [
     { 
-      name: 'Cat-Cow Stretch', 
+      name: 'Scissor Kick', 
       difficulty: 'Beginner', 
-      image: '/images/stretches/core/cat-cow.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/bf15d84e-28b9-4fd0-85dd-4a9889d5a18e/scissor+kick.jpg?format=2500w',
       primaryMuscles: ['Core', 'Spine'],
       secondaryMuscles: ['Back']
     },
     { 
-      name: 'Child\'s Pose', 
+      name: 'Side Plank Hip Dip', 
       difficulty: 'Beginner', 
-      image: '/images/stretches/core/childs-pose.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/5112d607-62c4-435e-8315-43f4d102263d/side+plank+hip+dips.jpg?format=2500w',
+      primaryMuscles: ['Core', 'Lower Back'],
+      secondaryMuscles: ['Hips', 'Back']
+    },
+    { 
+      name: 'Adductor Squeeze V-Up', 
+      difficulty: 'Beginner', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/9b7bd05a-bce5-4369-93fe-f9222ab39a20/adductor+squeeze+v+up.jpg?format=2500w',
+      primaryMuscles: ['Core', 'Spine'],
+      secondaryMuscles: ['Back']
+    },
+    { 
+      name: 'Modified Eccentric Pallof Press', 
+      difficulty: 'Beginner', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/52a12402-f43f-44d8-8d90-4fbe10712889/modified+eccentric+pallof+press.jpg?format=2500w',
+      primaryMuscles: ['Core', 'Lower Back'],
+      secondaryMuscles: ['Hips', 'Back']
+    },
+    { 
+      name: 'isometric Abdominal Crunch', 
+      difficulty: 'Beginner', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/e759bbfe-8c2f-4c3f-9d39-c76c6729a2bf/isometric+abdominal+crunch.jpg?format=2500w',
+      primaryMuscles: ['Core', 'Spine'],
+      secondaryMuscles: ['Back']
+    },
+    { 
+      name: 'Alternate Heel Touches', 
+      difficulty: 'Beginner', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/682212f7-b181-453d-ac1f-46ed11a7a719/alternate+heel+touches.jpg?format=2500w',
       primaryMuscles: ['Core', 'Lower Back'],
       secondaryMuscles: ['Hips', 'Back']
     }
   ],
-  'Back': [
+  'Upper Back': [
     { 
-      name: 'Dowel Lats Stretch', 
+      name: 'Prisoner Extension', 
       difficulty: 'Intermediate', 
-      image: '/images/stretches/back/dowel-lats.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/f66f1681-160d-48f4-a277-15c752e67420/prisoner+extension.jpg?format=2500w',
       primaryMuscles: ['Back', 'Latissimus Dorsi'],
       secondaryMuscles: ['Shoulders']
     },
     { 
-      name: 'Banded Lats Stretch', 
+      name: 'Banded Assited Thread the Needle', 
       difficulty: 'Intermediate', 
-      image: '/images/stretches/back/banded-lats.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/4ebedee4-184b-45ce-87ac-442df84388b3/Band+Assisted+Thread+the+Needle.jpg?format=2500w',
+      primaryMuscles: ['Back', 'Latissimus Dorsi'],
+      secondaryMuscles: ['Shoulders']
+    },
+    { 
+      name: 'Cable Diverging Pulldown', 
+      difficulty: 'Intermediate', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/dc76e253-e20e-4d8f-84b7-dc0bbccc18df/cable+diverging+pulldown.jpg?format=2500w',
+      primaryMuscles: ['Back', 'Latissimus Dorsi'],
+      secondaryMuscles: ['Shoulders']
+    },
+    { 
+      name: 'Thoraic Open Book', 
+      difficulty: 'Intermediate', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/1642443036922-WCY8RHW8LFE8V340GIQP/Thoracic%2BOpen%2BBook.jpg?format=2500w',
+      primaryMuscles: ['Back', 'Latissimus Dorsi'],
+      secondaryMuscles: ['Shoulders']
+    },
+    { 
+      name: 'Floor Angel', 
+      difficulty: 'Intermediate', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/1635539752212-3FVEVV7VVGLNCTKUVF2Y/Floor%2BAngel.jpg?format=2500w',
+      primaryMuscles: ['Back', 'Latissimus Dorsi'],
+      secondaryMuscles: ['Shoulders']
+    },
+    { 
+      name: 'Regressed Thoracic Extension', 
+      difficulty: 'Intermediate', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/9b057c0a-85f0-49a1-9b73-5a64a7fa48e4/Regressed+Thoracic+Extension.jpg?format=2500w',
       primaryMuscles: ['Back', 'Latissimus Dorsi'],
       secondaryMuscles: ['Shoulders']
     }
   ],
   'Lower Back': [
     { 
-      name: 'Knee-to-Chest Stretch', 
+      name: 'Elevated Child\'s Pose Side Stretch', 
       difficulty: 'Beginner', 
-      image: '/images/stretches/lower-back/knee-to-chest.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/daf8744b-ca19-4ffc-8923-9d7672bb715a/elevated+childs+pose+side+stretch.jpg?format=2500w',
       primaryMuscles: ['Lower Back', 'Hips'],
       secondaryMuscles: ['Glutes']
     },
     { 
-      name: 'Piriformis Stretch', 
+      name: 'Ankle Sciatic Nerve Flossing', 
       difficulty: 'Intermediate', 
-      image: '/images/stretches/lower-back/piriformis.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/548b5571-1b5e-4992-a2a8-de699218f1a8/ankle+sciatic+nerve+flossing.jpg?format=2500w',
+      primaryMuscles: ['Lower Back', 'Hips'],
+      secondaryMuscles: ['Glutes']
+    },
+    { 
+      name: 'Prisoner Side Crunch', 
+      difficulty: 'Beginner', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/0e9789c9-a8d8-4d9d-b081-36c22d63b5e3/prisoner+side+crunch.jpg?format=2500w',
+      primaryMuscles: ['Lower Back', 'Hips'],
+      secondaryMuscles: ['Glutes']
+    },
+    { 
+      name: 'Prisoner Extension', 
+      difficulty: 'Intermediate', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/f66f1681-160d-48f4-a277-15c752e67420/prisoner+extension.jpg?format=2500w',
+      primaryMuscles: ['Lower Back', 'Hips'],
+      secondaryMuscles: ['Glutes']
+    },
+    { 
+      name: 'Lumbar Rotation Stretch', 
+      difficulty: 'Beginner', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/87a7d3a2-c2a4-49fd-bff6-59e2de7e1550/lumbar+rotation+stretch.jpg?format=2500w',
+      primaryMuscles: ['Lower Back', 'Hips'],
+      secondaryMuscles: ['Glutes']
+    },
+    { 
+      name: 'Prone Extension with Dowel', 
+      difficulty: 'Intermediate', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/221879ba-2a22-4d6d-845b-02a8c827a191/Prone+Extension+with+Dowel.jpg?format=2500w',
       primaryMuscles: ['Lower Back', 'Hips'],
       secondaryMuscles: ['Glutes']
     }
@@ -288,16 +393,44 @@ export const muscleStretches: MuscleStretches = {
   ],
   'Posture': [
     { 
-      name: 'Wall Angels', 
+      name: 'Foam Roller Single Leg Bridge', 
       difficulty: 'Beginner', 
-      image: '/images/stretches/posture/wall-angels.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/4ab7c748-4dfd-4263-9c04-623a57daebd2/Foam+Roller+Single+Leg+Bridge.jpg?format=2500w',
       primaryMuscles: ['Posture', 'Upper Back'],
       secondaryMuscles: ['Shoulders']
     },
     { 
-      name: 'Thoracic Extension', 
+      name: 'Swiss Ball Straight Leg Bridge', 
       difficulty: 'Intermediate', 
-      image: '/images/stretches/posture/thoracic-extension.jpg',
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/d41ddd55-1de0-404d-9c33-cd6f7a3fdb49/Swiss+Ball+Straight+Leg+Bridge.jpg?format=2500w',
+      primaryMuscles: ['Posture', 'Upper Back'],
+      secondaryMuscles: ['Spine']
+    },
+    { 
+      name: 'Kettle Bell Romanian Deadlift', 
+      difficulty: 'Intermediate', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/1632679994213-42OVRN1T9AL4XVBZEMKC/Kettlebell%2BRomanian%2BDeadlift.jpg?format=2500w',
+      primaryMuscles: ['Posture', 'Upper Back'],
+      secondaryMuscles: ['Spine']
+    },
+    { 
+      name: 'Kettle Bell Single Leg Deadlift', 
+      difficulty: 'Intermediate', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/1632679070200-GPF74NS0IRMA0U9Z1UM8/Kettlebell%2BSingle%2BLeg%2BDeadlift.jpg?format=2500w',
+      primaryMuscles: ['Posture', 'Upper Back'],
+      secondaryMuscles: ['Spine']
+    },
+    { 
+      name: 'Active Hamstring Stretch', 
+      difficulty: 'Intermediate', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/6f41b3a7-d683-4482-aafd-788e132ad3bd/Active+Hamstring+Stretch.jpg?format=2500w',
+      primaryMuscles: ['Posture', 'Upper Back'],
+      secondaryMuscles: ['Spine']
+    },
+    { 
+      name: 'Glute Bridge March', 
+      difficulty: 'Intermediate', 
+      image: 'https://images.squarespace-cdn.com/content/v1/5f5e8592d2b0854b18af6975/1642367054619-37KJJOAANYZ9MRYKQGWN/Glute%2BBridge%2BMarch.jpg?format=2500w',
       primaryMuscles: ['Posture', 'Upper Back'],
       secondaryMuscles: ['Spine']
     }
