@@ -781,8 +781,8 @@ const [splitError, setSplitError] = useState('');
           </motion.div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <Card className="p-8 mb-8 flex-1">
+        <div className="grid grid-cols-1 gap-8">
+          <Card className="p-8 flex-1">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
               Configure Your Workout Split
             </h2>
@@ -794,12 +794,12 @@ const [splitError, setSplitError] = useState('');
                   <Target className="w-4 h-4 inline mr-1" />
                   Experience Level
                 </label>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {['Beginner', 'Intermediate', 'Advanced'].map((level) => (
                     <button
                       key={level}
                       onClick={() => setSplitConfig(prev => ({ ...prev, experience: level }))}
-                      className={`w-full p-3 rounded-xl border text-left transition-all text-sm ${
+                      className={`w-full p-5 rounded-xl border text-left transition-all text-sm ${
                         splitConfig.experience === level
                           ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300'
                           : 'border-gray-300 dark:border-gray-600 hover:border-emerald-300 text-gray-700 dark:text-gray-300'
@@ -840,12 +840,12 @@ const [splitError, setSplitError] = useState('');
                   <MapPin className="w-4 h-4 inline mr-1" />
                   Location
                 </label>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {['Gym', 'Home', 'Hybrid'].map((location) => (
                     <button
                       key={location}
                       onClick={() => setSplitConfig(prev => ({ ...prev, location }))}
-                      className={`w-full p-3 rounded-xl border text-left transition-all text-sm ${
+                      className={`w-full p-5 rounded-xl border text-left transition-all text-sm ${
                         splitConfig.location === location
                           ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300'
                           : 'border-gray-300 dark:border-gray-600 hover:border-emerald-300 text-gray-700 dark:text-gray-300'
@@ -914,7 +914,7 @@ const [splitError, setSplitError] = useState('');
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: 0.2 }}
               className="space-y-6"
             >
               <Card className="p-8">
@@ -933,10 +933,14 @@ const [splitError, setSplitError] = useState('');
                   </Button>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-2">
                   <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                     <p className="text-sm text-gray-600 dark:text-gray-400">Experience</p>
                     <p className="font-semibold text-gray-900 dark:text-white">{generatedSplit.experience}</p>
+                  </div>
+                  <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Goal</p>
+                    <p className="font-semibold text-gray-900 dark:text-white">{generatedSplit.goal}</p>
                   </div>
                   <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                     <p className="text-sm text-gray-600 dark:text-gray-400">Location</p>
@@ -945,42 +949,47 @@ const [splitError, setSplitError] = useState('');
                 </div>
               </Card>
 
-              {generatedSplit.days.map((day) => (
-                <Card key={day.day} className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                      {day.day}: {day.focus}
-                    </h3>
-                    <span className="px-3 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded-full text-sm">
-                      {day.duration}
-                    </span>
-                  </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {generatedSplit.days.map((day) => (
+                  <Card
+                    key={day.day}
+                    className="p-6"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                        {day.day}: {day.focus}
+                      </h3>
+                      <span className="px-3 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded-full text-sm">
+                        {day.duration}
+                      </span>
+                    </div>
 
-                  <div className="space-y-3">
-                    {day.exercises.map((exercise: Exercise, exerciseIndex: number) => (
-                      <div key={exerciseIndex} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                        <div className="flex-1">
-                          <h4 className="font-semibold text-gray-900 dark:text-white">
-                            {exercise.name}
-                          </h4>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">
-                            {exercise.muscleGroup}
-                            {exercise.equipment && ` • ${exercise.equipment}`}
-                          </p>
+                    <div className="space-y-3">
+                      {day.exercises.map((exercise: Exercise, exerciseIndex: number) => (
+                        <div key={exerciseIndex} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-gray-900 dark:text-white">
+                              {exercise.name}
+                            </h4>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                              {exercise.muscleGroup}
+                              {exercise.equipment && ` • ${exercise.equipment}`}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-bold text-emerald-600">
+                              {exercise.sets} × {exercise.reps}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              {exercise.rest} rest
+                            </p>
+                          </div>
                         </div>
-                        <div className="text-right">
-                          <p className="font-bold text-emerald-600">
-                            {exercise.sets} × {exercise.reps}
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            {exercise.rest} rest
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </Card>
-              ))}
+                      ))}
+                    </div>
+                  </Card>
+                ))}
+              </div>
             </motion.div>
           )}
         </div>
