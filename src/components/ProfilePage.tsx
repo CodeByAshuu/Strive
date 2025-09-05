@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { User, Edit2, LogOut, Save } from 'lucide-react'
+import { User, Edit2, LogOut, Save, X } from 'lucide-react'
 import { useAuth } from './../contexts/AuthContext'
 import { supabase } from './../lib/supabase'
 import { Button } from './ui/Button'
@@ -23,6 +23,14 @@ export const ProfilePage: React.FC = () => {
   const [editing, setEditing] = useState(false)
   const [loading, setLoading] = useState(false)
   const [profile, setProfile] = useState<UserProfile>({
+    age: null,
+    weight: null,
+    height: null,
+    goal: null,
+    workout_frequency: null,
+    target_weight: null,
+  })
+  const [originalProfile, setOriginalProfile] = useState<UserProfile>({
     age: null,
     weight: null,
     height: null,
@@ -53,14 +61,16 @@ export const ProfilePage: React.FC = () => {
       }
 
       if (data) {
-        setProfile({
+        const profileData = {
           age: data.age,
           weight: data.weight,
           height: data.height,
           goal: data.goal,
           workout_frequency: data.workout_frequency,
           target_weight: data.target_weight,
-        })
+        }
+        setProfile(profileData)
+        setOriginalProfile(profileData) // Store original data
       }
     } catch (error) {
       console.error('Error fetching profile:', error)
@@ -72,20 +82,47 @@ export const ProfilePage: React.FC = () => {
 
     setLoading(true)
     try {
+      // Prepare the data for upsert - convert empty strings to null
+      const updateData = {
+        user_id: user.id,
+        age: profile.age || null,
+        weight: profile.weight || null,
+        height: profile.height || null,
+        goal: profile.goal || null,
+        workout_frequency: profile.workout_frequency || null,
+        target_weight: profile.target_weight || null,
+        updated_at: new Date().toISOString(),
+      }
+
       const { error } = await supabase
         .from('user_profiles')
-        .upsert({
-          user_id: user.id,
-          ...profile,
-          updated_at: new Date().toISOString(),
+        .upsert(updateData, {
+          onConflict: 'user_id'
         })
 
-      if (error) throw error
+      if (error) {
+        console.error('Supabase error details:', error)
+        throw error
+      }
+
+      // Update original profile with new data
+      setOriginalProfile(profile)
       setEditing(false)
+      
+      // Show success message or refresh data
+      console.log('Profile saved successfully!')
+      
     } catch (error) {
       console.error('Error saving profile:', error)
+      // Optionally show error message to user
     }
     setLoading(false)
+  }
+
+  const handleCancel = () => {
+    // Reset to original values from database
+    setProfile(originalProfile)
+    setEditing(false)
   }
 
   const handleSignOut = async () => {
@@ -97,10 +134,19 @@ export const ProfilePage: React.FC = () => {
     }
   }
 
-    const updateProfile = <K extends keyof UserProfile>(key: K, value: UserProfile[K]) => {
-        setProfile(prev => ({ ...prev, [key]: value }))
-    }
+  const updateProfile = <K extends keyof UserProfile>(key: K, value: UserProfile[K]) => {
+    setProfile(prev => ({ ...prev, [key]: value }))
+  }
 
+  // Handle input changes with proper type conversion
+  const handleInputChange = (key: keyof UserProfile, value: string) => {
+    const numericValue = value === '' ? null : parseInt(value)
+    updateProfile(key, numericValue)
+  }
+
+  const handleSelectChange = (key: 'goal' | 'workout_frequency', value: string) => {
+    updateProfile(key, value === '' ? null : value)
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pt-20">
@@ -128,8 +174,8 @@ export const ProfilePage: React.FC = () => {
                 <Input
                   label="Age"
                   type="number"
-                  value={profile.age || ''}
-                  onChange={(e) => updateProfile('age', parseInt(e.target.value) || null)}
+                  value={profile.age?.toString() || ''}
+                  onChange={(e) => handleInputChange('age', e.target.value)}
                   disabled={!editing}
                   placeholder="Enter your age"
                 />
@@ -137,8 +183,8 @@ export const ProfilePage: React.FC = () => {
                 <Input
                   label="Current Weight (kg)"
                   type="number"
-                  value={profile.weight || ''}
-                  onChange={(e) => updateProfile('weight', parseInt(e.target.value) || null)}
+                  value={profile.weight?.toString() || ''}
+                  onChange={(e) => handleInputChange('weight', e.target.value)}
                   disabled={!editing}
                   placeholder="Enter current weight"
                 />
@@ -146,8 +192,8 @@ export const ProfilePage: React.FC = () => {
                 <Input
                   label="Height (cm)"
                   type="number"
-                  value={profile.height || ''}
-                  onChange={(e) => updateProfile('height', parseInt(e.target.value) || null)}
+                  value={profile.height?.toString() || ''}
+                  onChange={(e) => handleInputChange('height', e.target.value)}
                   disabled={!editing}
                   placeholder="Enter height"
                 />
@@ -155,14 +201,14 @@ export const ProfilePage: React.FC = () => {
                 <Input
                   label="Target Weight (kg)"
                   type="number"
-                  value={profile.target_weight || ''}
-                  onChange={(e) => updateProfile('target_weight', parseInt(e.target.value) || null)}
+                  value={profile.target_weight?.toString() || ''}
+                  onChange={(e) => handleInputChange('target_weight', e.target.value)}
                   disabled={!editing}
                   placeholder="Enter target weight"
                 />
               </div>
 
-              {editing && (
+              {editing ? (
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -170,7 +216,7 @@ export const ProfilePage: React.FC = () => {
                     </label>
                     <select
                       value={profile.goal || ''}
-                      onChange={(e) => updateProfile('goal', e.target.value)}
+                      onChange={(e) => handleSelectChange('goal', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:bg-gray-700 dark:text-white"
                     >
                       <option value="">Select goal</option>
@@ -188,7 +234,7 @@ export const ProfilePage: React.FC = () => {
                     </label>
                     <select
                       value={profile.workout_frequency || ''}
-                      onChange={(e) => updateProfile('workout_frequency', e.target.value)}
+                      onChange={(e) => handleSelectChange('workout_frequency', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:bg-gray-700 dark:text-white"
                     >
                       <option value="">Select frequency</option>
@@ -200,9 +246,7 @@ export const ProfilePage: React.FC = () => {
                     </select>
                   </div>
                 </div>
-              )}
-
-              {!editing && (
+              ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -238,32 +282,32 @@ export const ProfilePage: React.FC = () => {
                     </Button>
                     <Button
                       variant="ghost"
-                      onClick={() => setEditing(false)}
+                      onClick={handleCancel}
                       className="flex-1 flex items-center justify-center text-white hover:text-gray-700"
                     >
+                      <X className="w-4 h-4 mr-2" />
                       Cancel
                     </Button>
                   </>
                 ) : (
                   <>
                     <Button
-                        onClick={() => setEditing(true)}
-                        variant="secondary"
-                        className="flex-1 flex items-center justify-center"
+                      onClick={() => setEditing(true)}
+                      variant="secondary"
+                      className="flex-1 flex items-center justify-center"
                     >
-                    <Edit2 className="w-4 h-4 mr-2" />
-                        Edit Profile
+                      <Edit2 className="w-4 h-4 mr-2" />
+                      Edit Profile
                     </Button>
 
                     <Button
-                        onClick={handleSignOut}
-                        variant="ghost"
-                        className="flex-1 flex items-center justify-center text-white hover:text-gray-700"
+                      onClick={handleSignOut}
+                      variant="ghost"
+                      className="flex-1 flex items-center justify-center text-white hover:text-gray-700"
                     >
-                    <LogOut className="w-4 h-4 mr-2" />
-                        Sign Out
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Sign Out
                     </Button>
-
                   </>
                 )}
               </div>
