@@ -3,9 +3,9 @@ import { motion } from 'framer-motion'
 import { User, Edit2, LogOut, Save, X } from 'lucide-react'
 import { useAuth } from './../contexts/AuthContext'
 import { supabase } from './../lib/supabase'
-import { Button } from './ui/Button'
+import { Button } from './ui/Button.tsx'
 import { Input } from './ui/Input.tsx'
-import { Card } from './ui/Card'
+import { Card } from './ui/Card.tsx'
 import { useNavigate } from 'react-router-dom'
 
 interface UserProfile {
