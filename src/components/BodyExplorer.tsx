@@ -205,7 +205,7 @@ const [splitError, setSplitError] = useState('');
   doc.rect(0, 0, 210, 30, 'F')
   doc.setTextColor(255, 255, 255)
   doc.setFontSize(20)
-  doc.text('FITFORGE', 20, 18)
+  doc.text('STRIVE', 20, 18)
   doc.setFontSize(12)
   doc.text('Your Personalized Workout Split', 20, 25)
 
@@ -251,7 +251,7 @@ const [splitError, setSplitError] = useState('');
     y += 10
   })
 
-  doc.save('fitforge-workout-split.pdf')
+  doc.save('STRIVE-workout-split.pdf')
 }
 
   const mainSections = [
