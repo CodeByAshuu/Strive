@@ -27,7 +27,6 @@ export interface WorkoutSplit {
 
 const PROXY_URL = 'http://localhost:3001/api';
 
-// Add this to src/lib/workoutSplit.ts
 export async function generateWorkoutSplit(
   experience: string,
   daysPerWeek: string,
