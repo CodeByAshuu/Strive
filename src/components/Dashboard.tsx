@@ -27,7 +27,7 @@ export const Dashboard: React.FC = () => {
       color: 'from-blue-500 to-cyan-600'
     },
     {
-      title: 'Body Explorer',
+      title: 'Fitness Toolkit',
       description: 'Interactive Calculators, Stretch Library and Challenges to enhance your fitness journey, all in one place',
       icon: Target,
       link: '/body-explorer',
@@ -95,10 +95,10 @@ export const Dashboard: React.FC = () => {
             >
               <div className="p-8 flex flex-col justify-between h-full">
                 <div>
-                  <div className={`w-14 h-14 bg-gradient-to-r ${feature.color} rounded-2xl flex items-center justify-center mb-6`}>
-                    <Icon className="w-7 h-7 text-white" />
+                  <div>
+                    <Icon className="absolute top-3 right-3 w-40 h-40 lg:w-40 lg:h-40 opacity-10 rotate-12 text-emerald-400 pointer-events-none" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3 tracking-tighter">
                     {feature.title}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400 mb-6">

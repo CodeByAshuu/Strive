@@ -314,14 +314,14 @@ const [splitError, setSplitError] = useState('');
                 >
                   {/* <GlareCard> */}
                   <GlareHover
-              key={section.title}
-              glareColor="#ffffff"
-              glareOpacity={0.3}
-              glareAngle={-30}
-              glareSize={300}
-              transitionDuration={800}
-              className="h-full"
-            >
+                    key={section.title}
+                    glareColor="#ffffff"
+                    glareOpacity={0.3}
+                    glareAngle={-30}
+                    glareSize={300}
+                    transitionDuration={800}
+                    className="h-full"
+                  >
                     <motion.div
                       className="p-8 cursor-pointer h-full flex flex-col justify-center items-center relative overflow-hidden"
                       onClick={() => setCurrentSection(section.id as Section)}
