@@ -4,7 +4,7 @@ import { User, Edit2, LogOut, Save } from 'lucide-react'
 import { useAuth } from './../contexts/AuthContext'
 import { supabase } from './../lib/supabase'
 import { Button } from './ui/Button'
-import { Input } from './ui/Input'
+import Input from './ui/Input'
 import { Card } from './ui/Card'
 import { useNavigate } from 'react-router-dom'
 
