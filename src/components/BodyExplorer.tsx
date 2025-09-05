@@ -6,6 +6,7 @@ import { Button } from './ui/Button'
 import { useAuth } from './../contexts/AuthContext'
 import { supabase } from './../lib/supabase'
 import { muscleStretches, type Stretch } from '../data/stretches';
+import { generateWorkoutSplit, type WorkoutSplit, type Exercise } from '../lib/workoutSplit';
 import jsPDF from 'jspdf'
 import GlareHover from './ui/GlareHover'
 import cutTextBg from '../assets/cut-text-bg-3.jpeg'
@@ -32,11 +33,11 @@ interface Challenge {
 }
 
 
-interface GeneratedSplit {
-  split: Record<string, string>
-  goal: string
-  experience: string
-  location: string
+interface SplitConfig {
+  experience: string;
+  days: string;
+  location: string;
+  cardio: boolean;
 }
 
 const challenges: Challenge[] = [
@@ -81,13 +82,15 @@ export const BodyExplorer: React.FC = () => {
   const [selectedMuscle, setSelectedMuscle] = useState<string>('Neck')
 
   // Split generator states
-  const [splitConfig, setSplitConfig] = useState({
-    experience: '',
-    days: '',
-    location: '',
-    cardio: false
-  })
-  const [generatedSplit, setGeneratedSplit] = useState<GeneratedSplit | null>(null)
+  const [splitConfig, setSplitConfig] = useState<SplitConfig>({
+  experience: '',
+  days: '',
+  location: '',
+  cardio: false
+});
+  const [generatedSplit, setGeneratedSplit] = useState<WorkoutSplit | null>(null);
+const [splitLoading, setSplitLoading] = useState(false);
+const [splitError, setSplitError] = useState('');
 
   useEffect(() => {
     if (user) {
@@ -165,104 +168,91 @@ export const BodyExplorer: React.FC = () => {
     return { category: 'Obese', color: 'text-red-600' }
   }
 
-  const generateWorkoutSplit = () => {
-    const { experience, days, location, cardio } = splitConfig
-    const goal = userProfile?.goal || 'General Fitness'
-
-    let split: Record<string, string> = {}
-
-    if (days === '3') {
-      split = {
-        'Day 1': 'Full Body A',
-        'Day 2': 'Rest',
-        'Day 3': 'Full Body B',
-        'Day 4': 'Rest',
-        'Day 5': 'Full Body C',
-        'Day 6': 'Rest',
-        'Day 7': 'Rest'
-      }
-    } else if (days === '4') {
-      split = {
-        'Day 1': 'Upper Body',
-        'Day 2': 'Lower Body',
-        'Day 3': 'Rest',
-        'Day 4': 'Push',
-        'Day 5': 'Pull',
-        'Day 6': 'Rest',
-        'Day 7': 'Rest'
-      }
-    } else if (days === '5') {
-      split = {
-        'Day 1': 'Push',
-        'Day 2': 'Pull',
-        'Day 3': 'Legs',
-        'Day 4': 'Rest',
-        'Day 5': 'Push',
-        'Day 6': 'Pull',
-        'Day 7': 'Rest'
-      }
-    } else if (days === '6') {
-      split = {
-        'Day 1': 'Push',
-        'Day 2': 'Pull',
-        'Day 3': 'Legs',
-        'Day 4': 'Push',
-        'Day 5': 'Pull',
-        'Day 6': 'Legs',
-        'Day 7': 'Rest'
-      }
-    }
-
-    if (cardio) {
-      Object.keys(split).forEach(day => {
-        if (split[day] === 'Rest') {
-          split[day] = 'Cardio/Active Recovery'
-        }
-      })
-    }
-
-    setGeneratedSplit({ split, goal, experience, location })
+  const generateWorkoutSplitPlan = async () => {
+  if (!splitConfig.experience || !splitConfig.days || !splitConfig.location) {
+    setSplitError('Please fill all required fields');
+    return;
   }
+
+  setSplitLoading(true);
+  setSplitError('');
+  
+  try {
+    const goal = userProfile?.goal || 'General Fitness';
+    
+    const split = await generateWorkoutSplit(
+      splitConfig.experience,
+      splitConfig.days,
+      splitConfig.location,
+      goal,
+      splitConfig.cardio
+    );
+    
+    setGeneratedSplit(split);
+  } catch (error) {
+    setSplitError(error instanceof Error ? error.message : 'Failed to generate workout split');
+  }
+  setSplitLoading(false);
+};
 
   const downloadSplitPDF = () => {
-    if (!generatedSplit) return
+  if (!generatedSplit) return
 
-    const doc = new jsPDF()
-    
-    // Header
-    doc.setFillColor(16, 185, 129)
-    doc.rect(0, 0, 210, 30, 'F')
-    doc.setTextColor(255, 255, 255)
-    doc.setFontSize(20)
-    doc.text('FITFORGE', 20, 18)
-    doc.setFontSize(12)
-    doc.text('Your Personalized Workout Split', 20, 25)
+  const doc = new jsPDF()
+  
+  // Header
+  doc.setFillColor(16, 185, 129)
+  doc.rect(0, 0, 210, 30, 'F')
+  doc.setTextColor(255, 255, 255)
+  doc.setFontSize(20)
+  doc.text('FITFORGE', 20, 18)
+  doc.setFontSize(12)
+  doc.text('Your Personalized Workout Split', 20, 25)
 
-    doc.setTextColor(0, 0, 0)
-    
-    let y = 45
-    doc.setFontSize(16)
-    doc.text('Weekly Workout Split', 20, y)
-    y += 10
+  doc.setTextColor(0, 0, 0)
+  
+  let y = 45
+  doc.setFontSize(16)
+  doc.text(generatedSplit.splitName, 20, y)
+  y += 10
 
-    doc.setFontSize(10)
-    doc.text(`Goal: ${generatedSplit.goal}`, 20, y)
-    doc.text(`Experience: ${generatedSplit.experience}`, 120, y)
-    y += 5
-    doc.text(`Location: ${generatedSplit.location}`, 20, y)
-    y += 15
+  doc.setFontSize(10)
+  doc.text(`Goal: ${generatedSplit.goal}`, 20, y)
+  doc.text(`Experience: ${generatedSplit.experience}`, 120, y)
+  y += 5
+  doc.text(`Location: ${generatedSplit.location}`, 20, y)
+  doc.text(`Duration: ${generatedSplit.totalDuration}`, 120, y)
+  y += 15
 
-    Object.entries(generatedSplit.split).forEach(([day, workout]) => {
-      doc.setFontSize(12)
-      doc.setFont('helvetica', 'bold')
-      doc.text(`${day}:`, 20, y)
+  generatedSplit.days.forEach((day) => {
+    if (y > 250) {
+      doc.addPage()
+      y = 20
+    }
+
+    doc.setFontSize(14)
+    doc.setFont('helvetica', 'bold')
+    doc.text(`${day.day}: ${day.focus} (${day.duration})`, 20, y)
+    y += 8
+
+    day.exercises.forEach((exercise) => {
+      if (y > 270) {
+        doc.addPage()
+        y = 20
+      }
+
+      doc.setFontSize(11)
       doc.setFont('helvetica', 'normal')
-      doc.text(`${workout}`, 60, y)
-      y += 8
+      doc.text(`${exercise.name}`, 25, y)
+      doc.text(`${exercise.sets} × ${exercise.reps} (${exercise.rest} rest)`, 160, y)
+      y += 6
     })
 
-    doc.save('fitforge-workout-split.pdf')
-  }
+    y += 10
+  })
+
+  doc.save('fitforge-workout-split.pdf')
+}
 
   const mainSections = [
     {
@@ -759,193 +749,244 @@ export const BodyExplorer: React.FC = () => {
 }
 
   if (currentSection === 'split') {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pb-8 pt-16">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-4xl font-bold">
-              <span className="bg-gradient-to-r from-emerald-500 to-teal-600 bg-clip-text text-transparent">
-                Split Generator
-              </span>
-            </h1>
-            <Button
-              variant="ghost"
-              onClick={() => setCurrentSection('main')}
-              className="mr-4 flex justify-center items-center text-white hover:text-gray-900"
-            >
-              <ArrowLeft className="w-4 h-4 mr-1" />
-              Back
-            </Button>
-          </div>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pb-8 pt-16">
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-4xl font-bold">
+            <span className="bg-gradient-to-r from-emerald-500 to-teal-600 bg-clip-text text-transparent">
+              Split Generator
+            </span>
+          </h1>
+          <Button
+            variant="ghost"
+            onClick={() => setCurrentSection('main')}
+            className="mr-4 flex justify-center items-center text-white hover:text-gray-900"
+          >
+            <ArrowLeft className="w-4 h-4 mr-1" />
+            Back
+          </Button>
+        </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <Card className="p-8 mb-8 flex-1">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-                Configure Your Workout Split
-              </h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                {/* Experience Level */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                    <Target className="w-4 h-4 inline mr-1" />
-                    Experience Level
-                  </label>
-                  <div className="space-y-2">
-                    {['Beginner', 'Intermediate', 'Advanced'].map((level) => (
-                      <button
-                        key={level}
-                        onClick={() => setSplitConfig(prev => ({ ...prev, experience: level }))}
-                        className={`w-full p-3 rounded-xl border text-left transition-all text-gray-200 ${
-                          splitConfig.experience === level
-                            ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
-                            : 'border-gray-300 dark:border-gray-600 hover:border-emerald-300'
-                        }`}
-                      >
-                        {level}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+        {/* Error Message */}
+        {splitError && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-4xl mx-auto mb-6"
+          >
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
+              <span className="text-red-700 dark:text-red-300">{splitError}</span>
+            </div>
+          </motion.div>
+        )}
 
-                {/* Days Per Week */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                    <Clock className="w-4 h-4 inline mr-1" />
-                    Days Per Week
-                  </label>
-                  <div className="space-y-2">
-                    {['3', '4', '5', '6'].map((days) => (
-                      <button
-                        key={days}
-                        onClick={() => setSplitConfig(prev => ({ ...prev, days }))}
-                        className={`w-full p-3 rounded-xl border text-left transition-all text-gray-200 ${
-                          splitConfig.days === days
-                            ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
-                            : 'border-gray-300 dark:border-gray-600 hover:border-emerald-300'
-                        }`}
-                      >
-                        {days} Days
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Location */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                    <MapPin className="w-4 h-4 inline mr-1" />
-                    Location
-                  </label>
-                  <div className="space-y-2">
-                    {['Gym', 'Home', 'Hybrid'].map((location) => (
-                      <button
-                        key={location}
-                        onClick={() => setSplitConfig(prev => ({ ...prev, location }))}
-                        className={`w-full p-3 rounded-xl border text-left transition-all text-gray-200 ${
-                          splitConfig.location === location
-                            ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
-                            : 'border-gray-300 dark:border-gray-600 hover:border-emerald-300'
-                        }`}
-                      >
-                        {location}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Cardio Toggle */}
-              <div className="mb-6">
-                <label className="flex items-center space-x-3 cursor-pointer">
-                  <div className="relative">
-                    <input
-                      type="checkbox"
-                      checked={splitConfig.cardio}
-                      onChange={(e) =>
-                        setSplitConfig((prev) => ({ ...prev, cardio: e.target.checked }))
-                      }
-                      className="sr-only"
-                    />
-                    <div
-                      className={`w-12 h-6 rounded-full transition-colors relative ${
-                        splitConfig.cardio ? "bg-emerald-500" : "bg-gray-300 dark:bg-gray-600"
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <Card className="p-8 mb-8 flex-1">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+              Configure Your Workout Split
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              {/* Experience Level */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                  <Target className="w-4 h-4 inline mr-1" />
+                  Experience Level
+                </label>
+                <div className="space-y-2">
+                  {['Beginner', 'Intermediate', 'Advanced'].map((level) => (
+                    <button
+                      key={level}
+                      onClick={() => setSplitConfig(prev => ({ ...prev, experience: level }))}
+                      className={`w-full p-3 rounded-xl border text-left transition-all text-sm ${
+                        splitConfig.experience === level
+                          ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300'
+                          : 'border-gray-300 dark:border-gray-600 hover:border-emerald-300 text-gray-700 dark:text-gray-300'
                       }`}
                     >
-                      <div
-                        className={`absolute top-[2.2px] left-0.5 w-5 h-5 bg-white rounded-full shadow-md transform transition-transform ${
-                          splitConfig.cardio ? "translate-x-6" : "translate-x-0"
-                        }`}
-                      />
-                    </div>
-                  </div>
-                  <span className="text-gray-700 dark:text-gray-300 flex items-center">
-                    <Zap className="w-4 h-4 mr-1" />
-                    Include Cardio Days
-                  </span>
-                </label>
+                      {level}
+                    </button>
+                  ))}
+                </div>
               </div>
 
-
-              {/* User Goal Display */}
-              {userProfile?.goal && (
-                <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
-                  <p className="text-sm text-blue-600 dark:text-blue-400">
-                    <strong>Your Goal:</strong> {userProfile.goal}
-                  </p>
+              {/* Days Per Week */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                  <Clock className="w-4 h-4 inline mr-1" />
+                  Days Per Week
+                </label>
+                <div className="space-y-2">
+                  {['3', '4', '5', '6'].map((days) => (
+                    <button
+                      key={days}
+                      onClick={() => setSplitConfig(prev => ({ ...prev, days }))}
+                      className={`w-full p-3 rounded-xl border text-left transition-all text-sm ${
+                        splitConfig.days === days
+                          ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300'
+                          : 'border-gray-300 dark:border-gray-600 hover:border-emerald-300 text-gray-700 dark:text-gray-300'
+                      }`}
+                    >
+                      {days} Days
+                    </button>
+                  ))}
                 </div>
-              )}
+              </div>
 
-              <Button
-                onClick={generateWorkoutSplit}
-                disabled={!splitConfig.experience || !splitConfig.days || !splitConfig.location}
-                className="w-full"
-              >
-                <Dumbbell className="w-5 h-5 mr-2" />
-                Generate Weekly Split
-              </Button>
-            </Card>
+              {/* Location */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                  <MapPin className="w-4 h-4 inline mr-1" />
+                  Location
+                </label>
+                <div className="space-y-2">
+                  {['Gym', 'Home', 'Hybrid'].map((location) => (
+                    <button
+                      key={location}
+                      onClick={() => setSplitConfig(prev => ({ ...prev, location }))}
+                      className={`w-full p-3 rounded-xl border text-left transition-all text-sm ${
+                        splitConfig.location === location
+                          ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300'
+                          : 'border-gray-300 dark:border-gray-600 hover:border-emerald-300 text-gray-700 dark:text-gray-300'
+                      }`}
+                    >
+                      {location}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
 
-            {/* Generated Split */}
-            {generatedSplit && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-              >
-                <Card className="p-8 flex-2">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                      Your Weekly Split
-                    </h2>
-                    <Button onClick={downloadSplitPDF} variant="secondary" className='flex justify-center items-center'>
-                      <Download className="w-4 h-4 mr-2" />
-                      Download PDF
-                    </Button>
+            {/* Cardio Toggle */}
+            <div className="mb-6">
+              <label className="flex items-center space-x-3 cursor-pointer">
+                <div className="relative">
+                  <input
+                    type="checkbox"
+                    checked={splitConfig.cardio}
+                    onChange={(e) =>
+                      setSplitConfig((prev) => ({ ...prev, cardio: e.target.checked }))
+                    }
+                    className="sr-only"
+                  />
+                  <div
+                    className={`w-12 h-6 rounded-full transition-colors relative ${
+                      splitConfig.cardio ? "bg-emerald-500" : "bg-gray-300 dark:bg-gray-600"
+                    }`}
+                  >
+                    <div
+                      className={`absolute top-[2.2px] left-0.5 w-5 h-5 bg-white rounded-full shadow-md transform transition-transform ${
+                        splitConfig.cardio ? "translate-x-6" : "translate-x-0"
+                      }`}
+                    />
                   </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {Object.entries(generatedSplit.split).map(([day, workout]) => (
-                      <div
-                        key={day}
-                        className={`p-4 rounded-xl border-l-4 ${
-                          workout === 'Rest' || workout === 'Cardio/Active Recovery'
-                            ? 'border-gray-400 bg-gray-50 dark:bg-gray-800'
-                            : 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
-                        }`}
-                      >
-                        <h3 className="font-bold text-gray-900 dark:text-white">{day}</h3>
-                        <p className="text-gray-600 dark:text-gray-400">{workout}</p>
+                </div>
+                <span className="text-gray-700 dark:text-gray-300 flex items-center">
+                  <Zap className="w-4 h-4 mr-1" />
+                  Include Cardio Days
+                </span>
+              </label>
+            </div>
+
+            {/* User Goal Display */}
+            {userProfile?.goal && (
+              <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+                <p className="text-sm text-blue-600 dark:text-blue-400">
+                  <strong>Your Goal:</strong> {userProfile.goal}
+                </p>
+              </div>
+            )}
+
+            <Button
+              onClick={generateWorkoutSplitPlan}
+              disabled={!splitConfig.experience || !splitConfig.days || !splitConfig.location || splitLoading}
+              loading={splitLoading}
+              className="w-full"
+            >
+              <Dumbbell className="w-5 h-5 mr-2" />
+              Generate Weekly Split
+            </Button>
+          </Card>
+
+          {/* Generated Split */}
+          {generatedSplit && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="space-y-6"
+            >
+              <Card className="p-8">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                      {generatedSplit.splitName}
+                    </h2>
+                    <p className="text-gray-600 dark:text-gray-400">
+                      {generatedSplit.totalDuration} • {generatedSplit.totalExercises} exercises
+                    </p>
+                  </div>
+                  <Button onClick={downloadSplitPDF} variant="secondary">
+                    <Download className="w-4 h-4 mr-2" />
+                    Download PDF
+                  </Button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Experience</p>
+                    <p className="font-semibold text-gray-900 dark:text-white">{generatedSplit.experience}</p>
+                  </div>
+                  <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Location</p>
+                    <p className="font-semibold text-gray-900 dark:text-white">{generatedSplit.location}</p>
+                  </div>
+                </div>
+              </Card>
+
+              {generatedSplit.days.map((day) => (
+                <Card key={day.day} className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                      {day.day}: {day.focus}
+                    </h3>
+                    <span className="px-3 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded-full text-sm">
+                      {day.duration}
+                    </span>
+                  </div>
+
+                  <div className="space-y-3">
+                    {day.exercises.map((exercise: Exercise, exerciseIndex: number) => (
+                      <div key={exerciseIndex} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-gray-900 dark:text-white">
+                            {exercise.name}
+                          </h4>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {exercise.muscleGroup}
+                            {exercise.equipment && ` • ${exercise.equipment}`}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-emerald-600">
+                            {exercise.sets} × {exercise.reps}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            {exercise.rest} rest
+                          </p>
+                        </div>
                       </div>
                     ))}
                   </div>
                 </Card>
-              </motion.div>
-            )}
-          </div>
+              ))}
+            </motion.div>
+          )}
         </div>
       </div>
-    )
+    </div>
+  );
   }
 
   return null
