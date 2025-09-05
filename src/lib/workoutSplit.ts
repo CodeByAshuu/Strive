@@ -27,6 +27,7 @@ export interface WorkoutSplit {
 
 const PROXY_URL = 'http://localhost:3001/api';
 
+// Add this to src/lib/workoutSplit.ts
 export async function generateWorkoutSplit(
   experience: string,
   daysPerWeek: string,
@@ -34,42 +35,63 @@ export async function generateWorkoutSplit(
   goal: string,
   includeCardio: boolean
 ): Promise<WorkoutSplit> {
-  try {
-    console.log("📤 Sending workout split generation request...");
-    
-    const response = await fetch(`${PROXY_URL}/generate-workout-split`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        experience,
-        daysPerWeek,
-        location,
-        goal,
-        includeCardio
-      }),
-    });
+  const maxRetries = 3;
+  let retries = 0;
+  
+  while (retries < maxRetries) {
+    try {
+      console.log(`📤 Sending workout split request (attempt ${retries + 1}/${maxRetries})...`);
+      
+      const response = await fetch(`${PROXY_URL}/generate-workout-split`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          experience,
+          daysPerWeek,
+          location,
+          goal,
+          includeCardio
+        }),
+      });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || `Server error: ${response.status}`);
-    }
+      if (response.status === 429) {
+        retries++;
+        const delay = Math.pow(2, retries) * 1000;
+        console.warn(`⚠️ Rate limit hit, retrying in ${delay}ms...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        continue;
+      }
 
-    const data = await response.json();
-    
-    if (!data.success) {
-      throw new Error(data.error || 'Failed to generate workout split');
-    }
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Server error: ${response.status}`);
+      }
 
-    console.log("✅ Successfully received workout split");
-    return data.workoutSplit;
-    
-  } catch (error) {
-    console.error("❌ Workout split generation error:", error);
-    if (error instanceof Error) {
-      throw new Error(`Workout Split API: ${error.message}`);
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to generate workout split');
+      }
+
+      console.log("✅ Successfully received workout split");
+      return data.workoutSplit;
+      
+    } catch (error) {
+      retries++;
+      
+      if (retries >= maxRetries) {
+        console.error("❌ Final attempt failed:", error);
+        if (error instanceof Error) {
+          throw new Error(`Workout Split API: ${error.message}`);
+        }
+        throw new Error("Failed to generate workout split after multiple attempts");
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
-    throw new Error("Failed to generate workout split");
   }
+  
+  throw new Error("Max retries reached. Please try again later.");
 }
