@@ -28,7 +28,7 @@ export const Dashboard: React.FC = () => {
     },
     {
       title: 'Body Explorer',
-      description: 'Interactive muscle targeting with exercise recommendations',
+      description: 'Interactive Calculators, Stretch Library and Challenges to enhance your fitness journey, all in one place',
       icon: Target,
       link: '/body-explorer',
       color: 'from-purple-500 to-pink-600'

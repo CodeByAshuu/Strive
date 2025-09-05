@@ -294,7 +294,7 @@ const [splitError, setSplitError] = useState('');
             animate={{ opacity: 1, y: 0 }}
             className="text-center mb-12"
           >
-            <h1 className="text-5xl font-bold mb-4 text-white">
+            <h1 className="text-5xl font-bold mb-2 text-white">
               Fitness Toolkit
             </h1>
             {/* <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">

@@ -97,8 +97,8 @@ export const WorkoutPage: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            💪 Custom Workouts
+          <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-4">
+            Custom Workouts
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
             AI-generated workout routines tailored to your goals and experience level
