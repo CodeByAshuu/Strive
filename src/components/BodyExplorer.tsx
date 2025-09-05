@@ -902,7 +902,7 @@ const [splitError, setSplitError] = useState('');
               onClick={generateWorkoutSplitPlan}
               disabled={!splitConfig.experience || !splitConfig.days || !splitConfig.location || splitLoading}
               loading={splitLoading}
-              className="w-full"
+              className="w-full flex justify-center items-center"
             >
               <Dumbbell className="w-5 h-5 mr-2" />
               Generate Weekly Split
@@ -927,7 +927,7 @@ const [splitError, setSplitError] = useState('');
                       {generatedSplit.totalDuration} • {generatedSplit.totalExercises} exercises
                     </p>
                   </div>
-                  <Button onClick={downloadSplitPDF} variant="secondary">
+                  <Button onClick={downloadSplitPDF} variant="secondary" className="flex justify-center items-center">
                     <Download className="w-4 h-4 mr-2" />
                     Download PDF
                   </Button>
