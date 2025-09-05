@@ -362,6 +362,7 @@ app.post('/api/generate-workout-split', async (req, res) => {
 
     REQUIREMENTS:
     - Create a ${daysPerWeek}-day weekly workout split
+    - Rest days should be 7 - ${daysPerWeek} = ${7 - daysPerWeek} days
     - Include specific exercises with sets and reps
     - Adjust difficulty based on experience level (${experience})
     - Use equipment appropriate for the location (${location})
