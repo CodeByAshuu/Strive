@@ -101,7 +101,7 @@ export const SignUp: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              FitForge
+              Strive
             </motion.h1>
             <p className="text-gray-600 dark:text-gray-400">Create your fitness journey</p>
           </div>
@@ -226,7 +226,7 @@ export const SignUp: React.FC = () => {
           <Card className="max-w-md p-6">
             <h3 className="text-lg font-bold mb-4">Terms & Conditions</h3>
             <div className="text-sm text-gray-600 dark:text-gray-400 space-y-2 max-h-64 overflow-y-auto">
-              <p>By using FitForge, you agree to:</p>
+              <p>By using Strive, you agree to:</p>
               <ul className="list-disc list-inside space-y-1">
                 <li>Provide accurate information about your fitness goals</li>
                 <li>Use the platform responsibly for fitness purposes</li>
