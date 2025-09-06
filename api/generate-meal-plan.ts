@@ -1,4 +1,5 @@
 import axios from 'axios';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 const AVAILABLE_MODELS = [
   'models/gemini-1.5-flash-002',
@@ -7,12 +8,13 @@ const AVAILABLE_MODELS = [
   'models/gemini-2.0-flash-001'
 ];
 
-export default async function handler(req, res) {
-  // Enable CORS
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // Add CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
+  
+  // Handle OPTIONS request for CORS preflight
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
@@ -98,7 +100,7 @@ export default async function handler(req, res) {
       });
     }
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Serverless function error:', error.response?.data || error.message);
     
     if (error.response?.status === 429) {
