@@ -1,17 +1,18 @@
-// src/lib/gemini.ts
+import { API_CONFIG, API_ENDPOINTS } from './config';
+
 export interface WeeklyMealPlan {
   [day: string]: {
     [mealType: string]: string;
   };
 }
 
-const PROXY_URL = 'http://localhost:3001/api';
+// const PROXY_URL = 'http://localhost:3001/api';
 
 export async function getMealPlanFromGemini(prompt: string): Promise<WeeklyMealPlan> {
   try {
     console.log("📤 Sending request to proxy server...");
     
-    const response = await fetch(`${PROXY_URL}/generate-meal-plan`, {
+    const response = await fetch(`${API_CONFIG.baseURL}${API_ENDPOINTS.mealPlan}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

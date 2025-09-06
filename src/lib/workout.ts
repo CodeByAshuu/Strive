@@ -1,4 +1,5 @@
-// src/lib/workout.ts
+import { API_CONFIG, API_ENDPOINTS } from './config';
+
 export interface Exercise {
   name: string;
   sets: number;
@@ -20,7 +21,7 @@ export interface WorkoutPlan {
   totalExercises: number;
 }
 
-const PROXY_URL = 'http://localhost:3001/api';
+// const PROXY_URL = 'http://localhost:3001/api';
 
 export async function generateWorkoutPlan(
   targetMuscles: string[],
@@ -31,7 +32,7 @@ export async function generateWorkoutPlan(
   try {
     console.log("📤 Sending workout generation request...");
     
-    const response = await fetch(`${PROXY_URL}/generate-workout`, {
+    const response = await fetch(`${API_CONFIG.baseURL}${API_ENDPOINTS.workout}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -1,4 +1,5 @@
-// src/lib/workoutSplit.ts
+import { API_CONFIG, API_ENDPOINTS } from './config';
+
 export interface Exercise {
   name: string;
   sets: number;
@@ -25,7 +26,7 @@ export interface WorkoutSplit {
   totalExercises: number;
 }
 
-const PROXY_URL = 'http://localhost:3001/api';
+// const PROXY_URL = 'http://localhost:3001/api';
 
 export async function generateWorkoutSplit(
   experience: string,
@@ -41,7 +42,7 @@ export async function generateWorkoutSplit(
     try {
       console.log(`📤 Sending workout split request (attempt ${retries + 1}/${maxRetries})...`);
       
-      const response = await fetch(`${PROXY_URL}/generate-workout-split`, {
+      const response = await fetch(`${API_CONFIG.baseURL}${API_ENDPOINTS.workoutSplit}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
